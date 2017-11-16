@@ -24,6 +24,15 @@ tool, enabling users to apply triggers and bring their system back up to full he
 
 ![logo](https://build.solus-project.com/logo.png)
 
+### TODO
+
+ - [x] Get initial static binary together
+ - [ ] Add library functions to help with logging/state/exec/etc
+ - [ ] Add very basic `mtime` tests for conditionally updating directories
+ - [ ] Enforce linking against `musl` for tiny binaries. (glibc is huge..)
+ - [ ] Drop GNUisms to allow this to actually work (looking at you, `#define _GNU_SOURCE`)
+ - [ ] Update TODO.
+
 ## Authors
 
 Copyright © 2017 Solus Project
