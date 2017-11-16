@@ -20,6 +20,10 @@ safely apply system changes (such as cache and system user management).
 We will also provide a CLI interface to allow usysconf to be utilised as a recovery
 tool, enabling users to apply triggers and bring their system back up to full health.
 
+`usysconf` is a [Solus project](https://solus-project.com/)
+
+![logo](https://build.solus-project.com/logo.png)
+
 ## Authors
 
 Copyright © 2017 Solus Project
