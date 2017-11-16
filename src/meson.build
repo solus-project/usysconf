@@ -8,6 +8,9 @@ usysconf = executable(
     sources: usysconf_sources,
     install: true,
     install_dir: path_sbindir,
+    link_args: [
+        '-static',
+    ],
     include_directories: [
         config_h_dir,
     ],
