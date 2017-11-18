@@ -25,6 +25,16 @@ bool usc_is_chrooted()
         return st.st_ino != 2;
 }
 
+bool usc_file_mtime(const char *path, time_t *time)
+{
+        struct stat st = { 0 };
+        if (stat(path, &st) != 0) {
+                return false;
+        }
+        *time = st.st_mtime;
+        return true;
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

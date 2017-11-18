@@ -15,6 +15,7 @@
 #include <stdlib.h>
 
 #include "context.h"
+#include "files.h"
 
 /**
  * UscHandler is currently just demo stuff and we'll flesh it out in time
@@ -57,6 +58,12 @@ static UscHandler usc_handlers[] = {
  */
 static bool usc_path_updated(__usc_unused__ const char *path)
 {
+        time_t sys_updated = 0;
+        if (!usc_file_mtime(path, &sys_updated)) {
+                return false;
+        }
+        /* TODO: Something useful with the mtime. */
+        fprintf(stderr, "%s mtime: %ld\n", path, sys_updated);
         return true;
 }
 

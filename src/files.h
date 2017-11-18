@@ -12,6 +12,8 @@
 #pragma once
 
 #include <stdbool.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 /**
  * Determine if the system is operating within a chroot or not.
@@ -19,6 +21,16 @@
  * @returns True if we've detected a chroot environment
  */
 bool usc_is_chrooted(void);
+
+/**
+ * Grab the mtime for a given path
+ *
+ * @param path Path that exists..
+ * @param time Pointer to store the time in
+ *
+ * @return True if we were able to grab the mtime
+ */
+bool usc_file_mtime(const char *path, time_t *time);
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
