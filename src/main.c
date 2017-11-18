@@ -20,11 +20,16 @@
 #include "state.h"
 
 /* Implemented elsewhere in the codebase */
+extern UscHandler usc_handler_glib2;
 extern UscHandler usc_handler_icon_cache;
 extern UscHandler usc_handler_ldconfig;
 
 /* Table of supported handlers */
-static const UscHandler *usc_handlers[] = { &usc_handler_icon_cache, &usc_handler_ldconfig };
+static const UscHandler *usc_handlers[] = {
+        &usc_handler_glib2,
+        &usc_handler_icon_cache,
+        &usc_handler_ldconfig,
+};
 
 static void usc_handle_one(const UscHandler *handler, UscContext *context, UscStateTracker *tracker)
 {
