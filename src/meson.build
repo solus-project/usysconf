@@ -1,8 +1,17 @@
+handlers = [
+    'icon-cache',
+]
+
 usysconf_sources = [
     'context.c',
     'files.c',
     'main.c',
 ]
+
+# Push all known handlers into the build
+foreach handler : handlers
+    usysconf_sources += 'handlers/@0@.c'.format(handler)
+endforeach
 
 usysconf_link_args = []
 

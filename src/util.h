@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <stdlib.h>
+
 /**
  * Taken out of libnica and various other Solus projects
  */
@@ -28,6 +30,8 @@
 #define ARRAY_SIZE(x) sizeof(x) / sizeof(x[0])
 
 #define __usc_unused__ __attribute__((unused))
+
+DEF_AUTOFREE(char, free)
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

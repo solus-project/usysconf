@@ -55,6 +55,18 @@ typedef UscHandlerStatus (*usc_context_func)(UscContext *context, const char *pa
                                              const char *full_path);
 
 /**
+ * UscHandler is currently just demo stuff and we'll flesh it out in time
+ * to support multiple paths. For now we're just interested in getting stuff
+ * off the ground.
+ */
+typedef struct UscHandler {
+        const char **paths;    /**<Path we register interest for */
+        const char *name;      /**<Name for this handler */
+        usc_context_func exec; /**<Execution handler */
+        size_t n_paths;        /**< Number of known paths */
+} UscHandler;
+
+/**
  * Construct a newly allocated UscContext for the given prefix
  *
  * @param prefix Valid path for all root prefix operations (i.e. '/')
