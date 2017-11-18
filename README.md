@@ -27,9 +27,9 @@ tool, enabling users to apply triggers and bring their system back up to full he
 ### TODO
 
  - [x] Get initial static binary together
- - [ ] Add library functions to help with logging/state/exec/etc
- - [ ] Add very basic `mtime` tests for conditionally updating directories
- - [ ] Enforce linking against `musl` for tiny binaries. (glibc is huge..)
+ - [x] Add library functions to help with logging/state/exec/etc
+ - [x] Add very basic `mtime` tests for conditionally updating directories
+ - [x] Enforce linking against `musl` for tiny binaries. (glibc is huge..)
  - [ ] Drop GNUisms to allow this to actually work (looking at you, `#define _GNU_SOURCE`)
  - [ ] Update TODO.
 
