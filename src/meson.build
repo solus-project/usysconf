@@ -1,4 +1,5 @@
 usysconf_sources = [
+    'files.c',
     'main.c',
 ]
 

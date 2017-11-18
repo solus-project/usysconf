@@ -9,24 +9,16 @@
  * (at your option) any later version.
  */
 
-#define _GNU_SOURCE
+#pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdbool.h>
 
-#include "files.h"
-
-int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
-{
-        /* Simple test */
-        if (usc_is_chrooted()) {
-                fprintf(stdout, "Chrooted!\n");
-        } else {
-                fprintf(stderr, "Not chrooted\n");
-        }
-        fprintf(stderr, "Not yet implemented\n");
-        return EXIT_FAILURE;
-}
+/**
+ * Determine if the system is operating within a chroot or not.
+ *
+ * @returns True if we've detected a chroot environment
+ */
+bool usc_is_chrooted(void);
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

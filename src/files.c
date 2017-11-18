@@ -9,23 +9,20 @@
  * (at your option) any later version.
  */
 
-#define _GNU_SOURCE
-
 #include <stdio.h>
-#include <stdlib.h>
+#include <sys/stat.h>
 
 #include "files.h"
 
-int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
+bool usc_is_chrooted()
 {
-        /* Simple test */
-        if (usc_is_chrooted()) {
-                fprintf(stdout, "Chrooted!\n");
-        } else {
-                fprintf(stderr, "Not chrooted\n");
+        struct stat st = { 0 };
+        /* Don't do dangerous system ops within a chroot like cbm updates */
+        if (stat("/", &st) != 0) {
+                fprintf(stderr, "Unable to probe '/', assuming chroot\n");
+                return true;
         }
-        fprintf(stderr, "Not yet implemented\n");
-        return EXIT_FAILURE;
+        return st.st_ino != 2;
 }
 
 /*
