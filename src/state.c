@@ -131,7 +131,7 @@ bool usc_state_tracker_push_path(UscStateTracker *self, const char *path)
                 return false;
         }
 
-        return usc_state_tracker_put_entry(self, (char *)path, st.st_mtime);
+        return usc_state_tracker_put_entry(self, dup, st.st_mtime);
 }
 
 static void usc_state_entry_free(UscStateEntry *entry)
@@ -282,15 +282,21 @@ bool usc_state_tracker_needs_update(UscStateTracker *self, const char *path)
 {
         time_t mtime = 0;
         UscStateEntry *entry = NULL;
+        autofree(char) *real = NULL;
+
+        real = realpath(path, NULL);
+        if (!real) {
+                return false;
+        }
 
         /* Don't know about this guy? Needs an update */
-        entry = usc_state_tracker_lookup(self, path);
+        entry = usc_state_tracker_lookup(self, real);
         if (!entry) {
                 return true;
         }
 
         /* Some fs bork, do it anyway */
-        if (!usc_file_mtime(path, &mtime)) {
+        if (!usc_file_mtime(real, &mtime)) {
                 return true;
         }
 
