@@ -65,6 +65,7 @@ void usc_context_free(UscContext *self)
                 return;
         }
         free(self->prefix);
+        free(self);
 }
 
 const char *usc_context_get_prefix(UscContext *self)
