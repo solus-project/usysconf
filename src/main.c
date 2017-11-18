@@ -14,18 +14,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "files.h"
+#include "context.h"
 
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
 {
-        /* Simple test */
-        if (usc_is_chrooted()) {
-                fprintf(stdout, "Chrooted!\n");
-        } else {
-                fprintf(stderr, "Not chrooted\n");
+        autofree(UscContext) *context = NULL;
+
+        context = usc_context_new("/");
+        if (!context) {
+                fputs("Cannot continue without valid UscContext\n", stderr);
+                return EXIT_FAILURE;
         }
-        fprintf(stderr, "Not yet implemented\n");
-        return EXIT_FAILURE;
+
+        if (usc_context_has_flag(context, USC_FLAGS_CHROOTED)) {
+                fputs("Chrooted!\n", stdout);
+        } else {
+                fputs("Not chrooted\n", stdout);
+        }
+
+        return EXIT_SUCCESS;
 }
 
 /*

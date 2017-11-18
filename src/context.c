@@ -17,6 +17,7 @@
 #include <string.h>
 
 #include "context.h"
+#include "files.h"
 
 /**
  * Opaque implementation allows us to avoid potential issues with methods
@@ -43,6 +44,18 @@ UscContext *usc_context_new(const char *prefix)
                 usc_context_free(ret);
                 return NULL;
         }
+
+        /* Examine topology somewhat */
+        if (strcmp(ret->prefix, "/") == 0) {
+                /* If we're using / as root, check its a chroot */
+                if (usc_is_chrooted()) {
+                        ret->flags |= USC_FLAGS_CHROOTED;
+                }
+        } else {
+                /* If root isn't '/', then it's unconditionally considered chroot */
+                ret->flags |= USC_FLAGS_CHROOTED;
+        }
+
         return ret;
 }
 
@@ -72,7 +85,6 @@ bool usc_context_has_flag(UscContext *self, unsigned int flag)
         }
         return false;
 }
-
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

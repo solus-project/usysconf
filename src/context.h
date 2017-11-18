@@ -13,6 +13,8 @@
 
 #include <stdbool.h>
 
+#include "util.h"
+
 /**
  * Bitwise flags for tracking the supported operations and state of a UscContext
  */
@@ -64,6 +66,8 @@ const char *usc_context_get_prefix(UscContext *context);
  * @returns True if the flag is set
  */
 bool usc_context_has_flag(UscContext *context, unsigned int flag);
+
+DEF_AUTOFREE(UscContext, usc_context_free)
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
