@@ -47,7 +47,7 @@ static bool is_orphan_icon_dir(const char *directory)
                 }
         }
         /* Must have had exactly one file, the icon-theme.cache */
-        return n_items == 1;
+        return n_items <= 1;
 }
 
 /**
@@ -64,9 +64,11 @@ static int rmdir_and(const char *dir, const char *file)
         if (ret < 0) {
                 return ret;
         }
-        ret = unlink(fp);
-        if (ret < 0) {
-                return ret;
+        if (usc_file_exists(fp)) {
+                ret = unlink(fp);
+                if (ret < 0) {
+                        return ret;
+                }
         }
         return rmdir(dir);
 }
@@ -97,7 +99,7 @@ static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char 
                         return USC_HANDLER_FAIL;
                 }
                 fprintf(stderr, "Removed orphan icon theme directory: %s\n", full_path);
-                return USC_HANDLER_SUCCESS;
+                return USC_HANDLER_SUCCESS | USC_HANDLER_DROP;
         }
 
         prefix = usc_context_get_prefix(ctx);

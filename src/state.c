@@ -167,6 +167,11 @@ bool usc_state_tracker_write(UscStateTracker *self)
 
         /* Walk nodes */
         for (UscStateEntry *entry = self->entry; entry; entry = entry->next) {
+                /* Drop stale entries here */
+                if (!entry->ptr || !usc_file_exists(entry->ptr)) {
+                        fprintf(stderr, "Dropping entry: %s\n", entry->ptr);
+                        continue;
+                }
                 if (fprintf(fp, "%ld:%s\n", entry->mtime, entry->ptr) < 0) {
                         fprintf(stderr, "fprintf(): %s %s\n", self->state_file, strerror(errno));
                         return false;

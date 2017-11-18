@@ -90,6 +90,11 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
                         }
 
                 push_entry:
+                        /* We won't record the new entry here and we won't write it back out either
+                         */
+                        if ((status & USC_HANDLER_DROP) == USC_HANDLER_DROP) {
+                                continue;
+                        }
                         if (!usc_state_tracker_push_path(tracker, resolved)) {
                                 fprintf(stderr, "Failed to record path %s\n", resolved);
                         }
