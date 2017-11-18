@@ -55,6 +55,16 @@ void usc_context_free(UscContext *context);
  */
 const char *usc_context_get_prefix(UscContext *context);
 
+/**
+ * Determine if the context has a given flag set
+ *
+ * @param context Pointer to an allocated UscContext instance
+ * @param flag Flag to check for membership
+ *
+ * @returns True if the flag is set
+ */
+bool usc_context_has_flag(UscContext *context, unsigned int flag);
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

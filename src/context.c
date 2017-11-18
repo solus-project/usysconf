@@ -62,6 +62,18 @@ const char *usc_context_get_prefix(UscContext *self)
         return (const char *)self->prefix;
 }
 
+bool usc_context_has_flag(UscContext *self, unsigned int flag)
+{
+        if (!self) {
+                return false;
+        }
+        if ((self->flags & flag) == flag) {
+                return true;
+        }
+        return false;
+}
+
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
