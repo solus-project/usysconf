@@ -13,6 +13,7 @@
 
 #include <dirent.h>
 #include <errno.h>
+#include <libgen.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -23,6 +24,52 @@
 static const char *icon_cache_paths[] = {
         "/usr/share/icons/*",
 };
+
+DEF_AUTOFREE(DIR, closedir)
+
+static bool is_orphan_icon_dir(const char *directory)
+{
+        int n_items = 0;
+        autofree(DIR) *dir = NULL;
+        struct dirent *ent = NULL;
+
+        dir = opendir(directory);
+        if (!dir) {
+                return false;
+        }
+        while ((ent = readdir(dir)) != NULL) {
+                if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0) {
+                        continue;
+                }
+                ++n_items;
+                if (strcmp(ent->d_name, "icon-theme.cache") != 0) {
+                        return false;
+                }
+        }
+        /* Must have had exactly one file, the icon-theme.cache */
+        return n_items == 1;
+}
+
+/**
+ * Helper to nuke the one file and it's parent directory.
+ *
+ * TODO: Just add a new rm_rf style command.
+ */
+static int rmdir_and(const char *dir, const char *file)
+{
+        autofree(char) *fp = NULL;
+        int ret = 0;
+
+        ret = asprintf(&fp, "%s/%s", dir, file);
+        if (ret < 0) {
+                return ret;
+        }
+        ret = unlink(fp);
+        if (ret < 0) {
+                return ret;
+        }
+        return rmdir(dir);
+}
 
 /**
  * Update the icon cache on disk for every icon them found in the given directory
@@ -42,6 +89,15 @@ static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char 
 
         if (!usc_file_is_dir(full_path)) {
                 return USC_HANDLER_SKIP;
+        }
+
+        if (is_orphan_icon_dir(full_path)) {
+                if (rmdir_and(full_path, "icon-theme.cache") != 0) {
+                        fprintf(stderr, "Failed to remove '%s': %s\n", full_path, strerror(errno));
+                        return USC_HANDLER_FAIL;
+                }
+                fprintf(stderr, "Removed orphan icon theme directory: %s\n", full_path);
+                return USC_HANDLER_SUCCESS;
         }
 
         prefix = usc_context_get_prefix(ctx);
