@@ -30,11 +30,11 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
 {
         UscHandlerStatus status = USC_HANDLER_MIN;
         const char *root = NULL;
+        bool record_remain = false;
 
         root = usc_context_get_prefix(context);
 
         for (size_t i = 0; i < handler->n_paths; i++) {
-                bool record_remain = false;
                 glob_t glo = { 0 };
                 const char *path = NULL;
                 autofree(char) *full_path = NULL;
@@ -46,7 +46,7 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
                         abort();
                 }
 
-                if (glob(full_path, GLOB_NOSORT | GLOB_BRACE, NULL, &glo) != 0) {
+                if (glob(full_path, GLOB_NOSORT, NULL, &glo) != 0) {
                         continue;
                 }
 
