@@ -81,11 +81,45 @@ static UscStateEntry *usc_state_tracker_lookup(UscStateTracker *self, const char
         return NULL;
 }
 
-bool usc_state_tracker_push_path(UscStateTracker *self, const char *path)
+/**
+ * Internal logic for pushing or updating an existing path.
+ */
+static bool usc_state_tracker_put_entry(UscStateTracker *self, char *path, time_t mtime)
 {
         UscStateEntry *entry = NULL;
-        autofree(char) *dup = NULL;
+
+        /* Does this entry already exist */
+        entry = usc_state_tracker_lookup(self, path);
+        if (entry) {
+                entry->mtime = mtime;
+                return true;
+        }
+
+        /* Must insert a new entry now */
+        entry = calloc(1, sizeof(UscStateEntry));
+        if (!entry) {
+                fputs("OOM\n", stderr);
+                return false;
+        }
+        entry->ptr = strdup(path);
+        if (!entry->ptr) {
+                fputs("OOM\n", stderr);
+                free(entry);
+                return false;
+        }
+
+        /* Merge list reversed */
+        entry->mtime = mtime;
+        entry->next = self->entry;
+        self->entry = entry;
+        return true;
+}
+
+bool usc_state_tracker_push_path(UscStateTracker *self, const char *path)
+{
         struct stat st = { 0 };
+
+        autofree(char) *dup = NULL;
 
         /* Make sure it actually exists */
         dup = realpath(path, NULL);
@@ -97,31 +131,7 @@ bool usc_state_tracker_push_path(UscStateTracker *self, const char *path)
                 return false;
         }
 
-        /* Does this entry already exist */
-        entry = usc_state_tracker_lookup(self, dup);
-        if (entry) {
-                goto store_time;
-        }
-
-        /* Must insert a new entry now */
-        entry = calloc(1, sizeof(UscStateEntry));
-        if (!entry) {
-                fputs("OOM\n", stderr);
-                return false;
-        }
-        entry->ptr = strdup(dup);
-        if (!entry->ptr) {
-                fputs("OOM\n", stderr);
-                free(entry);
-                return false;
-        }
-
-store_time:
-        /* Merge list reversed */
-        entry->mtime = st.st_mtime;
-        entry->next = self->entry;
-        self->entry = entry;
-        return true;
+        return usc_state_tracker_put_entry(self, (char *)path, st.st_mtime);
 }
 
 static void usc_state_entry_free(UscStateEntry *entry)
@@ -192,6 +202,11 @@ bool usc_state_tracker_load(UscStateTracker *self)
 
         /* Walk the line. */
         while ((read = getline(&bfr, &n, fp)) > 0) {
+                char *c = NULL;
+                char *part = NULL;
+                autofree(char) *snd = NULL;
+                time_t t = 0;
+
                 if (read < 1) {
                         continue;
                 }
@@ -201,9 +216,46 @@ bool usc_state_tracker_load(UscStateTracker *self)
                         --read;
                 }
 
-                /* TODO: Anything vaguely useful. */
-                fprintf(stderr, "Got a line, yo: '%s'\n", bfr);
+                c = memchr(bfr, ':', (size_t)read);
+                if (!c) {
+                        fprintf(stderr, "Erronous line in input misses colon: '%s'\n", bfr);
+                        errno = EINVAL;
+                        break;
+                }
 
+                if (c - bfr < 1) {
+                        fprintf(stderr, "Missing filename in line: '%s'\n", bfr);
+                        errno = EINVAL;
+                        break;
+                }
+
+                snd = strdup(c + 1);
+
+                /* Now break the string here at the colon */
+                bfr[c - bfr] = '\0';
+
+                t = strtoll(bfr, &part, 10);
+                if (!part) {
+                        fprintf(stderr, "Invalid timestamp '%s'\n", bfr);
+                        errno = EINVAL;
+                        break;
+                }
+
+                /* Drop old cache entries */
+                if (!usc_file_exists(snd)) {
+                        fprintf(stderr, "Dropping old cache item '%s'\n", snd);
+                        errno = 0;
+                        goto next;
+                }
+
+                /* Ensure we can actually push this guy. */
+                if (!usc_state_tracker_put_entry(self, snd, t)) {
+                        fprintf(stderr, "Failed to push entry: %s\n", snd);
+                        errno = EINVAL;
+                        break;
+                }
+
+        next:
                 free(bfr);
                 bfr = NULL;
         }
@@ -223,7 +275,8 @@ bool usc_state_tracker_load(UscStateTracker *self)
                 return false;
         }
 
-        return false;
+        /* Successfully loaded */
+        return true;
 }
 
 bool usc_state_tracker_needs_update(UscStateTracker *self, const char *path)
