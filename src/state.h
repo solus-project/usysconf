@@ -40,6 +40,12 @@ void usc_state_tracker_free(UscStateTracker *tracker);
  */
 bool usc_state_tracker_push_path(UscStateTracker *tracker, const char *path);
 
+/**
+ * Request that the state tracker actually dumps itself to disk so that it
+ * can be reloaded at a later point
+ */
+bool usc_state_tracker_write(UscStateTracker *tracker);
+
 DEF_AUTOFREE(UscStateTracker, usc_state_tracker_free)
 
 /*

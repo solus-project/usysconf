@@ -11,6 +11,7 @@
 
 #define _GNU_SOURCE
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,6 +24,8 @@
  * TODO: Have this in /var and a define option
  */
 #define STATE_FILE "state"
+
+DEF_AUTOFREE(FILE, fclose)
 
 /**
  * Each entry is just a list node with a ptr (registered interest) and
@@ -140,6 +143,27 @@ void usc_state_tracker_free(UscStateTracker *self)
         usc_state_entry_free(self->entry);
         free(self->state_file);
         free(self);
+}
+
+bool usc_state_tracker_write(UscStateTracker *self)
+{
+        autofree(FILE) *fp = NULL;
+
+        fp = fopen(self->state_file, "w");
+        if (!fp) {
+                fprintf(stderr, "fopen(): %s %s\n", self->state_file, strerror(errno));
+                return false;
+        }
+
+        /* Walk nodes */
+        for (UscStateEntry *entry = self->entry; entry; entry = entry->next) {
+                if (fprintf(fp, "%ld:%s\n", entry->mtime, entry->ptr) < 0) {
+                        fprintf(stderr, "fprintf(): %s %s\n", self->state_file, strerror(errno));
+                        return false;
+                }
+        }
+
+        return true;
 }
 
 /*

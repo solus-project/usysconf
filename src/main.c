@@ -43,7 +43,7 @@ static bool usc_path_updated(__usc_unused__ const char *path)
         return true;
 }
 
-static void usc_handle_one(const UscHandler *handler, UscContext *context)
+static void usc_handle_one(const UscHandler *handler, UscContext *context, UscStateTracker *tracker)
 {
         UscHandlerStatus status = USC_HANDLER_MIN;
         const char *root = NULL;
@@ -51,6 +51,7 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context)
         root = usc_context_get_prefix(context);
 
         for (size_t i = 0; i < handler->n_paths; i++) {
+                bool record_remain = false;
                 glob_t glo = { 0 };
                 const char *path = NULL;
                 autofree(char) *full_path = NULL;
@@ -68,6 +69,12 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context)
 
                 for (size_t i = 0; i < glo.gl_pathc; i++) {
                         char *resolved = glo.gl_pathv[i];
+                        bool record_path = false;
+
+                        /* Don't try to do anything for the remainder of this glob. */
+                        if (record_remain) {
+                                goto push_entry;
+                        }
 
                         /* Do we need to handle this dude ? */
                         if (!usc_path_updated(resolved)) {
@@ -76,26 +83,31 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context)
 
                         status = handler->exec(context, path, resolved);
 
-                        switch (status) {
-                        case USC_HANDLER_FAIL:
-                                /* Update record */
-                                fputs("Failed\n", stderr);
-                                break;
-                        case USC_HANDLER_SUCCESS:
-                                /* Update record */
-                                fputs("Success\n", stderr);
-                                break;
-                        case USC_HANDLER_SKIP:
-                                /* Can't run right now, so don't update mtimes */
-                                fprintf(stderr, "Skipping: %s\n", handler->name);
-                                break;
-                        default:
-                                break;
+                        if ((status & USC_HANDLER_SUCCESS) == USC_HANDLER_SUCCESS) {
+                                record_path = true;
                         }
+                        if ((status & USC_HANDLER_FAIL) == USC_HANDLER_FAIL) {
+                                fputs("Failed\n", stderr);
+                                continue;
+                        }
+                        if ((status & USC_HANDLER_SKIP) == USC_HANDLER_SKIP) {
+                                fprintf(stderr, "Skipping: %s\n", handler->name);
+                                continue;
+                        }
+
                         if ((status & USC_HANDLER_BREAK) == USC_HANDLER_BREAK) {
                                 /* TODO: Record all paths as updated */
                                 fprintf(stderr, "breaking..\n");
-                                break;
+                                record_remain = true;
+                        }
+
+                        if (!record_path) {
+                                continue;
+                        }
+
+                push_entry:
+                        if (!usc_state_tracker_push_path(tracker, resolved)) {
+                                fprintf(stderr, "Failed to record path %s\n", resolved);
                         }
                 }
                 globfree(&glo);
@@ -126,7 +138,13 @@ int main(__usc_unused__ int argc, __usc_unused__ char **argv)
 
         /* Just test the main loop iteration jank for now */
         for (size_t i = 0; i < ARRAY_SIZE(usc_handlers); i++) {
-                usc_handle_one(usc_handlers[i], context);
+                usc_handle_one(usc_handlers[i], context, tracker);
+        }
+
+        /* Dump it back to disk */
+        if (!usc_state_tracker_write(tracker)) {
+                fputs("Failed to write state file!\n", stderr);
+                return EXIT_FAILURE;
         }
 
         return EXIT_SUCCESS;
