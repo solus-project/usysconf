@@ -47,6 +47,15 @@ bool usc_file_exists(const char *path)
         return true;
 }
 
+bool usc_file_is_dir(const char *path)
+{
+        struct stat st = { 0 };
+        if (stat(path, &st) != 0) {
+                return false;
+        }
+        return S_ISDIR(st.st_mode);
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

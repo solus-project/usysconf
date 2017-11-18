@@ -13,7 +13,6 @@
 
 #include <dirent.h>
 #include <errno.h>
-#include <libgen.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -22,10 +21,8 @@
 #include "util.h"
 
 static const char *icon_cache_paths[] = {
-        "/usr/share/icons",
+        "/usr/share/icons/*",
 };
-
-DEF_AUTOFREE(DIR, closedir)
 
 /**
  * Update the icon cache on disk for every icon them found in the given directory
@@ -33,16 +30,19 @@ DEF_AUTOFREE(DIR, closedir)
 static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char *path,
                                                     const char *full_path)
 {
-        autofree(DIR) *dir = NULL;
         autofree(char) *gtk_bin = NULL;
         const char *prefix = NULL;
-        struct dirent *ent = NULL;
+        autofree(char) *fp = NULL;
         char *command[] = {
                 NULL, /* /usr/bin/gtk-update-icon-cache */
                 "-ft",
                 NULL, /* Path */
                 NULL, /* Terminator */
         };
+
+        if (!usc_file_is_dir(full_path)) {
+                return USC_HANDLER_SKIP;
+        }
 
         prefix = usc_context_get_prefix(ctx);
         if (asprintf(&gtk_bin, "%s/usr/bin/gtk-update-icon-cache", prefix) < 0) {
@@ -52,46 +52,23 @@ static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char 
 
         command[0] = gtk_bin;
 
-        dir = opendir(full_path);
-        if (!dir) {
-                fprintf(stderr, "Failed to open dir: %s (%s)\n", path, strerror(errno));
+        if (asprintf(&fp, "%s/index.theme", full_path) < 0) {
+                fputs("OOM\n", stderr);
                 return USC_HANDLER_FAIL;
         }
 
-        while ((ent = readdir(dir)) != NULL) {
-                autofree(char) *fp = NULL;
-                char *dirn = NULL;
-
-                /* Skip '.' and '..' entries */
-                if (strncmp(ent->d_name, ".", 1) == 0 || strncasecmp(ent->d_name, "..", 2) == 0) {
-                        continue;
-                }
-
-                if (asprintf(&fp, "%s/%s/index.theme", full_path, ent->d_name) < 0) {
-                        fputs("OOM\n", stderr);
-                        return USC_HANDLER_FAIL;
-                }
-
-                /* Require an index theme. */
-                if (!usc_file_exists(fp)) {
-                        continue;
-                }
-
-                /* Grab the dirname again now we know the index theme exists */
-                dirn = dirname(fp);
-                if (!dirn) {
-                        continue;
-                }
-
-                command[2] = dirn;
-                fprintf(stderr, "Checking %s\n", dirn);
-                int ret = usc_exec_command(command);
-                if (ret != 0) {
-                        fprintf(stderr, "Ohnoes\n");
-                }
+        /* Require an index theme. */
+        if (!usc_file_exists(fp)) {
+                return USC_HANDLER_SKIP;
         }
 
-        /* We do nothing *yet* */
+        command[2] = full_path;
+        fprintf(stderr, "Checking %s\n", full_path);
+        int ret = usc_exec_command(command);
+        if (ret != 0) {
+                fprintf(stderr, "Ohnoes\n");
+                return USC_HANDLER_FAIL;
+        }
         return USC_HANDLER_SUCCESS;
 }
 

@@ -11,6 +11,7 @@
 
 #define _GNU_SOURCE
 
+#include <glob.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -48,9 +49,9 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context)
         root = usc_context_get_prefix(context);
 
         for (size_t i = 0; i < handler->n_paths; i++) {
+                glob_t glo = { 0 };
                 const char *path = NULL;
                 autofree(char) *full_path = NULL;
-                autofree(char) *resolved_path = NULL;
 
                 path = handler->paths[i];
 
@@ -59,36 +60,39 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context)
                         abort();
                 }
 
-                resolved_path = realpath(full_path, NULL);
-                if (!resolved_path) {
-                        /* This guy doesn't exist */
+                if (glob(full_path, GLOB_NOSORT | GLOB_BRACE, NULL, &glo) != 0) {
                         continue;
                 }
 
-                /* Do we need to handle this dude ? */
-                if (!usc_path_updated(resolved_path)) {
-                        continue;
-                }
+                for (size_t i = 0; i < glo.gl_pathc; i++) {
+                        char *resolved = glo.gl_pathv[i];
 
-                status = handler->exec(context, path, resolved_path);
-                switch (status) {
-                case USC_HANDLER_FAIL:
-                        /* Update record */
-                        fputs("Failed\n", stderr);
-                        break;
-                case USC_HANDLER_SUCCESS:
-                        /* Update record */
-                        fputs("Success\n", stderr);
-                        break;
-                case USC_HANDLER_SKIP:
-                        /* Can't run right now, so don't update mtimes */
-                        fprintf(stderr, "Skipping: %s\n", handler->name);
-                        break;
-                default:
-                        /* You done goofed */
-                        fprintf(stderr, "Invalid return! %s\n", handler->name);
-                        break;
+                        /* Do we need to handle this dude ? */
+                        if (!usc_path_updated(resolved)) {
+                                continue;
+                        }
+
+                        status = handler->exec(context, path, resolved);
+                        switch (status) {
+                        case USC_HANDLER_FAIL:
+                                /* Update record */
+                                fputs("Failed\n", stderr);
+                                break;
+                        case USC_HANDLER_SUCCESS:
+                                /* Update record */
+                                fputs("Success\n", stderr);
+                                break;
+                        case USC_HANDLER_SKIP:
+                                /* Can't run right now, so don't update mtimes */
+                                fprintf(stderr, "Skipping: %s\n", handler->name);
+                                break;
+                        default:
+                                /* You done goofed */
+                                fprintf(stderr, "Invalid return! %s\n", handler->name);
+                                break;
+                        }
                 }
+                globfree(&glo);
         }
 }
 
