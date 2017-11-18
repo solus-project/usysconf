@@ -50,6 +50,10 @@ cdata.set_quoted('PACKAGE_NAME', meson.project_name())
 cdata.set_quoted('PACKAGE_VERSION', meson.project_version())
 cdata.set_quoted('PACKAGE_URL', 'https://solus-project.com')
 
+# Allow building a static binary. For now let's default to dynamic so we can
+# actually valgrind the thing.
+with_static_binary = get_option('with-static-binary')
+
 # Write config.h now
 config_h = configure_file(
      configuration: cdata,
@@ -68,6 +72,7 @@ report = [
     '    datadir:                                @0@'.format(path_datadir),
     '    sysconfdir:                             @0@'.format(path_sysconfdir),
     '    sbindir:                                @0@'.format(path_sbindir),
+    '    static binary:                          @0@'.format(with_static_binary),
 ]
 
 # Output some stuff to validate the build config
