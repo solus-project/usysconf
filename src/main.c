@@ -16,23 +16,49 @@
 
 #include "context.h"
 
+/**
+ * UscHandler is currently just demo stuff and we'll flesh it out in time
+ * to support multiple paths. For now we're just interested in getting stuff
+ * off the ground.
+ */
+typedef struct UscHandler {
+        const char *path;      /**<Path we register interest for */
+        const char *name;      /**<Name for this handler */
+        usc_context_func exec; /**<Execution handler */
+} UscHandler;
+
 /* DEMO */
-static bool demo1(__usc_unused__ UscContext *ctx, const char *p, const char *fp)
+static UscHandlerStatus demo1(__usc_unused__ UscContext *ctx, const char *p, const char *fp)
 {
         fprintf(stderr, "Checking: %s (%s)\n", p, fp);
-        return true;
+        return USC_HANDLER_SUCCESS;
 }
 
-static bool demo2(UscContext *ctx, const char *p, const char *fp)
+static UscHandlerStatus demo2(UscContext *ctx, const char *p, const char *fp)
 {
+        if (usc_context_has_flag(ctx, USC_FLAGS_CHROOTED)) {
+                fputs("debug: skipping chrooted call\n", stderr);
+                return USC_HANDLER_SKIP;
+        }
         fprintf(stderr, "Checking: %s (%s) from %s\n", p, fp, usc_context_get_prefix(ctx));
-        return true;
+        return USC_HANDLER_SUCCESS;
 }
 
-static usc_context_func handlers[] = {
-        demo1,
-        demo2,
+static UscHandler usc_handlers[] = {
+        { "/usr/share/icons", "Icon caches", demo1 },
+        { "/usr/lib/systemd/system", "Systemd units", demo2 },
 };
+
+/**
+ * Will be used to actually check if the path is updated, by consulting
+ * the mtime of the tree against our known mtime.
+ *
+ * For now, let's cheat, because live stream.
+ */
+static bool usc_path_updated(__usc_unused__ const char *path)
+{
+        return true;
+}
 
 int main(__usc_unused__ int argc, __usc_unused__ char **argv)
 {
@@ -51,11 +77,32 @@ int main(__usc_unused__ int argc, __usc_unused__ char **argv)
         }
 
         /* Just test the main loop iteration jank for now */
-        for (size_t i = 0; i < ARRAY_SIZE(handlers); i++) {
-                if (!handlers[i](context, "/usr", "/root/usr")) {
-                        fprintf(stderr, "Fail\n");
-                } else {
-                        fprintf(stderr, "Success\n");
+        for (size_t i = 0; i < ARRAY_SIZE(usc_handlers); i++) {
+                UscHandlerStatus status = USC_HANDLER_MIN;
+                const UscHandler *handler = &usc_handlers[i];
+                /* Do we need to handle this dude ? */
+                if (!usc_path_updated(handler->path)) {
+                        continue;
+                }
+
+                status = handler->exec(context, handler->path, handler->path);
+                switch (status) {
+                case USC_HANDLER_FAIL:
+                        /* Update record */
+                        fputs("Failed\n", stderr);
+                        break;
+                case USC_HANDLER_SUCCESS:
+                        /* Update record */
+                        fputs("Success\n", stderr);
+                        break;
+                case USC_HANDLER_SKIP:
+                        /* Can't run right now, so don't update mtimes */
+                        fprintf(stderr, "Skipping: %s\n", handler->name);
+                        break;
+                default:
+                        /* You done goofed */
+                        fprintf(stderr, "Invalid return! %s\n", handler->name);
+                        break;
                 }
         }
 

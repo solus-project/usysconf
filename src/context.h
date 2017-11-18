@@ -32,6 +32,17 @@ typedef enum {
 typedef struct UscContext UscContext;
 
 /**
+ * Each execution handler can return one of 3 return codes only.
+ */
+typedef enum {
+        USC_HANDLER_MIN = 0,
+        USC_HANDLER_SUCCESS, /**<We successfully updated a thing */
+        USC_HANDLER_FAIL,    /**<We failed to update a thing */
+        USC_HANDLER_SKIP,    /**<Skipped execution, don't update records */
+        USC_HANDLER_MAX,
+} UscHandlerStatus;
+
+/**
  * Standard context execution function
  *
  * @param context Pointer to a valid UscContext instance
@@ -40,7 +51,8 @@ typedef struct UscContext UscContext;
  *
  * @returns True if the execution handler succeeded
  */
-typedef bool (*usc_context_func)(UscContext *context, const char *path, const char *full_path);
+typedef UscHandlerStatus (*usc_context_func)(UscContext *context, const char *path,
+                                             const char *full_path);
 
 /**
  * Construct a newly allocated UscContext for the given prefix
