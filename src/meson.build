@@ -1,5 +1,6 @@
 handlers = [
     'icon-cache',
+    'ldconfig',
 ]
 
 usysconf_sources = [

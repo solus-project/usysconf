@@ -39,6 +39,7 @@ typedef enum {
         USC_HANDLER_SUCCESS, /**<We successfully updated a thing */
         USC_HANDLER_FAIL,    /**<We failed to update a thing */
         USC_HANDLER_SKIP,    /**<Skipped execution, don't update records */
+        USC_HANDLER_BREAK,   /**<Do not process further paths */
         USC_HANDLER_MAX,
 } UscHandlerStatus;
 

@@ -20,24 +20,24 @@
 #include "files.h"
 #include "util.h"
 
-static const char *icon_cache_paths[] = {
-        "/usr/share/icons/*",
+static const char *library_paths[] = {
+        /* Match all library paths directories and run ldconfig for them */
+        "{,usr}/lib{32,64}",
 };
 
 /**
  * Update the icon cache on disk for every icon them found in the given directory
  */
-static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char *path,
-                                                    const char *full_path)
+static UscHandlerStatus usc_handler_ldconfig_exec(UscContext *ctx, const char *path,
+                                                  const char *full_path)
 {
-        autofree(char) *gtk_bin = NULL;
+        autofree(char) *ldbin = NULL;
         const char *prefix = NULL;
         autofree(char) *fp = NULL;
         char *command[] = {
-                NULL, /* /usr/bin/gtk-update-icon-cache */
-                "-ft",
-                NULL, /* Path */
-                NULL, /* Terminator */
+                NULL,             /* /sbin/ldconfig */
+                "-X", "-r", NULL, /* root */
+                NULL,             /* Terminator */
         };
 
         if (!usc_file_is_dir(full_path)) {
@@ -45,38 +45,33 @@ static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char 
         }
 
         prefix = usc_context_get_prefix(ctx);
-        if (asprintf(&gtk_bin, "%s/usr/bin/gtk-update-icon-cache", prefix) < 0) {
+        if (asprintf(&ldbin, "%s/sbin/ldconfig", prefix) < 0) {
                 fputs("OOM\n", stderr);
-                return USC_HANDLER_FAIL;
+                return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
 
-        command[0] = gtk_bin;
-
-        if (asprintf(&fp, "%s/index.theme", full_path) < 0) {
-                fputs("OOM\n", stderr);
-                return USC_HANDLER_FAIL;
+        command[0] = ldbin;
+        if (strcmp(prefix, "/") != 0) {
+                command[3] = (char *)prefix;
+        } else {
+                command[2] = NULL;
         }
 
-        /* Require an index theme. */
-        if (!usc_file_exists(fp)) {
-                return USC_HANDLER_SKIP;
-        }
-
-        command[2] = (char *)full_path;
         fprintf(stderr, "Checking %s\n", full_path);
         int ret = usc_exec_command(command);
         if (ret != 0) {
                 fprintf(stderr, "Ohnoes\n");
-                return USC_HANDLER_FAIL;
+                return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
-        return USC_HANDLER_SUCCESS;
+        /* Only want to run once for all of our globs */
+        return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 }
 
-const UscHandler usc_handler_icon_cache = {
-        .name = "icon caches",
-        .exec = usc_handler_icon_cache_exec,
-        .paths = icon_cache_paths,
-        .n_paths = ARRAY_SIZE(icon_cache_paths),
+const UscHandler usc_handler_ldconfig = {
+        .name = "ldconfig",
+        .exec = usc_handler_ldconfig_exec,
+        .paths = library_paths,
+        .n_paths = ARRAY_SIZE(library_paths),
 };
 
 /*

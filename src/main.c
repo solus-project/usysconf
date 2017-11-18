@@ -20,9 +20,10 @@
 
 /* Implemented elsewhere in the codebase */
 extern UscHandler usc_handler_icon_cache;
+extern UscHandler usc_handler_ldconfig;
 
 /* Table of supported handlers */
-static const UscHandler *usc_handlers[] = { &usc_handler_icon_cache };
+static const UscHandler *usc_handlers[] = { &usc_handler_icon_cache, &usc_handler_ldconfig };
 
 /**
  * Will be used to actually check if the path is updated, by consulting
@@ -73,6 +74,7 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context)
                         }
 
                         status = handler->exec(context, path, resolved);
+
                         switch (status) {
                         case USC_HANDLER_FAIL:
                                 /* Update record */
@@ -87,8 +89,11 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context)
                                 fprintf(stderr, "Skipping: %s\n", handler->name);
                                 break;
                         default:
-                                /* You done goofed */
-                                fprintf(stderr, "Invalid return! %s\n", handler->name);
+                                break;
+                        }
+                        if ((status & USC_HANDLER_BREAK) == USC_HANDLER_BREAK) {
+                                /* TODO: Record all paths as updated */
+                                fprintf(stderr, "breaking..\n");
                                 break;
                         }
                 }
