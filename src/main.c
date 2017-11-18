@@ -26,23 +26,6 @@ extern UscHandler usc_handler_ldconfig;
 /* Table of supported handlers */
 static const UscHandler *usc_handlers[] = { &usc_handler_icon_cache, &usc_handler_ldconfig };
 
-/**
- * Will be used to actually check if the path is updated, by consulting
- * the mtime of the tree against our known mtime.
- *
- * For now, let's cheat, because live stream.
- */
-static bool usc_path_updated(__usc_unused__ const char *path)
-{
-        time_t sys_updated = 0;
-        if (!usc_file_mtime(path, &sys_updated)) {
-                return true;
-        }
-        /* TODO: Something useful with the mtime. */
-        fprintf(stderr, "%s mtime: %ld\n", path, sys_updated);
-        return true;
-}
-
 static void usc_handle_one(const UscHandler *handler, UscContext *context, UscStateTracker *tracker)
 {
         UscHandlerStatus status = USC_HANDLER_MIN;
@@ -77,7 +60,7 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
                         }
 
                         /* Do we need to handle this dude ? */
-                        if (!usc_path_updated(resolved)) {
+                        if (!usc_state_tracker_needs_update(tracker, resolved)) {
                                 continue;
                         }
 

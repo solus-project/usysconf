@@ -41,6 +41,16 @@ void usc_state_tracker_free(UscStateTracker *tracker);
 bool usc_state_tracker_push_path(UscStateTracker *tracker, const char *path);
 
 /**
+ * Check our internal state db to decide if this path is due an update
+ *
+ * @param tracker Pointer to an allocated UscStateTracker
+ * @param path Path to query (will be resolved)
+ *
+ * @returns True if the path needs updating
+ */
+bool usc_state_tracker_needs_update(UscStateTracker *tracker, const char *path);
+
+/**
  * Request that the state tracker actually dumps itself to disk so that it
  * can be reloaded at a later point
  */

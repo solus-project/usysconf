@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "files.h"
 #include "state.h"
 
 /**
@@ -164,6 +165,31 @@ bool usc_state_tracker_write(UscStateTracker *self)
         }
 
         return true;
+}
+
+bool usc_state_tracker_needs_update(UscStateTracker *self, const char *path)
+{
+        time_t mtime = 0;
+        UscStateEntry *entry = NULL;
+
+        /* Don't know about this guy? Needs an update */
+        entry = usc_state_tracker_lookup(self, path);
+        if (!entry) {
+                return true;
+        }
+
+        /* Some fs bork, do it anyway */
+        if (!usc_file_mtime(path, &mtime)) {
+                return true;
+        }
+
+        /* If our record mtime is older than the current mtime, update it */
+        if (entry->mtime < mtime) {
+                return true;
+        }
+
+        /* Nothing to be done here.. */
+        return false;
 }
 
 /*
