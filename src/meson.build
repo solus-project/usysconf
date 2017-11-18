@@ -7,6 +7,7 @@ usysconf_sources = [
     'context.c',
     'files.c',
     'main.c',
+    'state.c',
     'util.c',
 ]
 
