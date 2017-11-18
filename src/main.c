@@ -16,7 +16,25 @@
 
 #include "context.h"
 
-int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
+/* DEMO */
+static bool demo1(__usc_unused__ UscContext *ctx, const char *p, const char *fp)
+{
+        fprintf(stderr, "Checking: %s (%s)\n", p, fp);
+        return true;
+}
+
+static bool demo2(UscContext *ctx, const char *p, const char *fp)
+{
+        fprintf(stderr, "Checking: %s (%s) from %s\n", p, fp, usc_context_get_prefix(ctx));
+        return true;
+}
+
+static usc_context_func handlers[] = {
+        demo1,
+        demo2,
+};
+
+int main(__usc_unused__ int argc, __usc_unused__ char **argv)
 {
         autofree(UscContext) *context = NULL;
 
@@ -30,6 +48,15 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
                 fputs("Chrooted!\n", stdout);
         } else {
                 fputs("Not chrooted\n", stdout);
+        }
+
+        /* Just test the main loop iteration jank for now */
+        for (size_t i = 0; i < ARRAY_SIZE(handlers); i++) {
+                if (!handlers[i](context, "/usr", "/root/usr")) {
+                        fprintf(stderr, "Fail\n");
+                } else {
+                        fprintf(stderr, "Success\n");
+                }
         }
 
         return EXIT_SUCCESS;

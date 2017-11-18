@@ -32,6 +32,17 @@ typedef enum {
 typedef struct UscContext UscContext;
 
 /**
+ * Standard context execution function
+ *
+ * @param context Pointer to a valid UscContext instance
+ * @param path Relative path for analysis without the root
+ * @param full_path The complete path to the root
+ *
+ * @returns True if the execution handler succeeded
+ */
+typedef bool (*usc_context_func)(UscContext *context, const char *path, const char *full_path);
+
+/**
  * Construct a newly allocated UscContext for the given prefix
  *
  * @param prefix Valid path for all root prefix operations (i.e. '/')

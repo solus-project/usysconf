@@ -25,6 +25,10 @@
 
 #define autofree(N) __attribute__((cleanup(_autofree_func_##N))) N
 
+#define ARRAY_SIZE(x) sizeof(x) / sizeof(x[0])
+
+#define __usc_unused__ __attribute__((unused))
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
