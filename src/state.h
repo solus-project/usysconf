@@ -31,6 +31,14 @@ UscStateTracker *usc_state_tracker_new(UscContext *context);
  */
 void usc_state_tracker_free(UscStateTracker *tracker);
 
+/**
+ * Attempt to push the path into the tracker with the current mtime
+ *
+ * Any existing entries will be overwritten by matching their collapsed
+ * path first. As such, all entries are required to actually exist on disk.
+ */
+bool usc_state_tracker_push_path(UscStateTracker *tracker, const char *path);
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

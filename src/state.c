@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "state.h"
 
@@ -22,9 +24,23 @@
  */
 #define STATE_FILE "state"
 
+/**
+ * Each entry is just a list node with a ptr (registered interest) and
+ * an mtime for when it was last modified on disk
+ */
+typedef struct UscStateEntry {
+        struct UscStateEntry *next; /**<Next guy in the chain */
+        char *ptr;                  /**<Registered interest */
+        time_t mtime;               /**<Last modified stamp */
+} UscStateEntry;
+
+/**
+ * Opaque implementation details.
+ */
 struct UscStateTracker {
         UscContext *context;
         char *state_file;
+        UscStateEntry *entry; /**<Root entry in the list */
 };
 
 UscStateTracker *usc_state_tracker_new(UscContext *context)
@@ -46,11 +62,81 @@ UscStateTracker *usc_state_tracker_new(UscContext *context)
         return ret;
 }
 
+/**
+ * Lookup the path within the internal list and find any matching node for it.
+ *
+ * This may return NULL.
+ */
+static UscStateEntry *usc_state_tracker_lookup(UscStateTracker *self, const char *path)
+{
+        for (UscStateEntry *entry = self->entry; entry; entry = entry->next) {
+                if (entry->ptr && strcmp(entry->ptr, path) == 0) {
+                        return entry;
+                }
+        }
+        return NULL;
+}
+
+bool usc_state_tracker_push_path(UscStateTracker *self, const char *path)
+{
+        UscStateEntry *entry = NULL;
+        autofree(char) *dup = NULL;
+        struct stat st = { 0 };
+
+        /* Make sure it actually exists */
+        dup = realpath(path, NULL);
+        if (!dup) {
+                return false;
+        }
+
+        if (stat(dup, &st) != 0) {
+                return false;
+        }
+
+        /* Does this entry already exist */
+        entry = usc_state_tracker_lookup(self, dup);
+        if (entry) {
+                goto store_time;
+        }
+
+        /* Must insert a new entry now */
+        entry = calloc(1, sizeof(UscStateEntry));
+        if (!entry) {
+                fputs("OOM\n", stderr);
+                return false;
+        }
+        entry->ptr = strdup(dup);
+        if (!entry->ptr) {
+                fputs("OOM\n", stderr);
+                free(entry);
+                return false;
+        }
+
+store_time:
+        /* Merge list reversed */
+        entry->mtime = st.st_mtime;
+        entry->next = self->entry;
+        self->entry = entry;
+        return true;
+}
+
+static void usc_state_entry_free(UscStateEntry *entry)
+{
+        if (!entry) {
+                return;
+        }
+        /* Free next dude in the chain */
+        usc_state_entry_free(entry->next);
+        free(entry->ptr);
+        free(entry);
+}
+
 void usc_state_tracker_free(UscStateTracker *self)
 {
         if (!self) {
                 return;
         }
+        usc_state_entry_free(self->entry);
         free(self->state_file);
         free(self);
 }
