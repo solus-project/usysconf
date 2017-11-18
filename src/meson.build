@@ -1,5 +1,5 @@
 handlers = [
-    'glib',
+    'glib2',
     'icon-cache',
     'ldconfig',
 ]
