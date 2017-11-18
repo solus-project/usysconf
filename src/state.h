@@ -51,6 +51,15 @@ bool usc_state_tracker_push_path(UscStateTracker *tracker, const char *path);
 bool usc_state_tracker_needs_update(UscStateTracker *tracker, const char *path);
 
 /**
+ * Attempt to load the existing state from disk
+ *
+ * @param tracker Pointer to an existing tracker
+ *
+ * @returns true if the load succeeded (or file was absent).
+ */
+bool usc_state_tracker_load(UscStateTracker *tracker);
+
+/**
  * Request that the state tracker actually dumps itself to disk so that it
  * can be reloaded at a later point
  */

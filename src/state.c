@@ -167,6 +167,65 @@ bool usc_state_tracker_write(UscStateTracker *self)
         return true;
 }
 
+bool usc_state_tracker_load(UscStateTracker *self)
+{
+        autofree(FILE) *fp = NULL;
+        char *bfr = NULL;
+        size_t n = 0;
+        ssize_t read = 0;
+
+        fp = fopen(self->state_file, "r");
+        if (!fp) {
+                /* If it doesn't exist, *meh* */
+                if (errno == ENOENT) {
+                        errno = 0;
+                        return true;
+                }
+                fprintf(stderr,
+                        "Failed to load state file %s: %s\n",
+                        self->state_file,
+                        strerror(errno));
+                return false;
+        }
+
+        errno = 0;
+
+        /* Walk the line. */
+        while ((read = getline(&bfr, &n, fp)) > 0) {
+                if (read < 1) {
+                        continue;
+                }
+                /* Strip the newline from it */
+                if (bfr[read - 1] == '\n') {
+                        bfr[read - 1] = '\0';
+                        --read;
+                }
+
+                /* TODO: Anything vaguely useful. */
+                fprintf(stderr, "Got a line, yo: '%s'\n", bfr);
+
+                free(bfr);
+                bfr = NULL;
+        }
+
+        if (bfr) {
+                free(bfr);
+        }
+
+        /* Janky ready. */
+        if (errno != 0) {
+                fprintf(stderr,
+                        "Failed to parse state: %s %s\n",
+                        self->state_file,
+                        strerror(errno));
+                usc_state_entry_free(self->entry);
+                self->entry = NULL;
+                return false;
+        }
+
+        return false;
+}
+
 bool usc_state_tracker_needs_update(UscStateTracker *self, const char *path)
 {
         time_t mtime = 0;

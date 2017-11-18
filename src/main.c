@@ -114,6 +114,11 @@ int main(__usc_unused__ int argc, __usc_unused__ char **argv)
                 return EXIT_FAILURE;
         }
 
+        /* Crack on regardless. */
+        if (!usc_state_tracker_load(tracker)) {
+                fputs("Invalid state has been removed\n", stderr);
+        }
+
         if (usc_context_has_flag(context, USC_FLAGS_CHROOTED)) {
                 fputs("Chrooted!\n", stdout);
         } else {
