@@ -35,12 +35,12 @@ typedef struct UscContext UscContext;
  * Each execution handler can return one of 3 return codes only.
  */
 typedef enum {
-        USC_HANDLER_MIN = 0,
-        USC_HANDLER_SUCCESS, /**<We successfully updated a thing */
-        USC_HANDLER_FAIL,    /**<We failed to update a thing */
-        USC_HANDLER_SKIP,    /**<Skipped execution, don't update records */
-        USC_HANDLER_BREAK,   /**<Do not process further paths */
-        USC_HANDLER_MAX,
+        USC_HANDLER_MIN = 1 << 0,
+        USC_HANDLER_SUCCESS = 1 << 1, /**<We successfully updated a thing */
+        USC_HANDLER_FAIL = 1 << 2,    /**<We failed to update a thing */
+        USC_HANDLER_SKIP = 1 << 3,    /**<Skipped execution, don't update records */
+        USC_HANDLER_BREAK = 1 << 4,   /**<Do not process further paths */
+        USC_HANDLER_MAX = 1 << 5,
 } UscHandlerStatus;
 
 /**

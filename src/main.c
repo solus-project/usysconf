@@ -67,6 +67,7 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
                         status = handler->exec(context, path, resolved);
 
                         if ((status & USC_HANDLER_SUCCESS) == USC_HANDLER_SUCCESS) {
+                                fprintf(stderr, "Success: %s\n", handler->name);
                                 record_path = true;
                         }
                         if ((status & USC_HANDLER_FAIL) == USC_HANDLER_FAIL) {
