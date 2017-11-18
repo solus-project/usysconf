@@ -12,6 +12,7 @@
 #pragma once
 
 #include "context.h"
+#include "util.h"
 
 /**
  * A UscStateTracker is an opaque type that is used to track the state
@@ -38,6 +39,8 @@ void usc_state_tracker_free(UscStateTracker *tracker);
  * path first. As such, all entries are required to actually exist on disk.
  */
 bool usc_state_tracker_push_path(UscStateTracker *tracker, const char *path);
+
+DEF_AUTOFREE(UscStateTracker, usc_state_tracker_free)
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

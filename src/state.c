@@ -127,6 +127,7 @@ static void usc_state_entry_free(UscStateEntry *entry)
         }
         /* Free next dude in the chain */
         usc_state_entry_free(entry->next);
+        fprintf(stderr, "ENTRY: %s (%ld)\n", entry->ptr, entry->mtime);
         free(entry->ptr);
         free(entry);
 }

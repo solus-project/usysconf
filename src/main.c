@@ -17,6 +17,7 @@
 
 #include "context.h"
 #include "files.h"
+#include "state.h"
 
 /* Implemented elsewhere in the codebase */
 extern UscHandler usc_handler_icon_cache;
@@ -104,10 +105,16 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context)
 int main(__usc_unused__ int argc, __usc_unused__ char **argv)
 {
         autofree(UscContext) *context = NULL;
+        autofree(UscStateTracker) *tracker = NULL;
 
         context = usc_context_new("/");
         if (!context) {
                 fputs("Cannot continue without valid UscContext\n", stderr);
+                return EXIT_FAILURE;
+        }
+        tracker = usc_state_tracker_new(context);
+        if (!tracker) {
+                fputs("Cannot continue without valid UscStateTracker\n", stderr);
                 return EXIT_FAILURE;
         }
 
