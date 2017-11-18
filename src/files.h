@@ -32,6 +32,14 @@ bool usc_is_chrooted(void);
  */
 bool usc_file_mtime(const char *path, time_t *time);
 
+/**
+ * Determien if the given path actually exists
+ *
+ * @param path Path to test
+ * @returns True if it exists
+ */
+bool usc_file_exists(const char *path);
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

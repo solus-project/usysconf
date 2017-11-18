@@ -9,10 +9,13 @@
  * (at your option) any later version.
  */
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <sys/stat.h>
 
 #include "files.h"
+#include "util.h"
 
 bool usc_is_chrooted()
 {
@@ -32,6 +35,15 @@ bool usc_file_mtime(const char *path, time_t *time)
                 return false;
         }
         *time = st.st_mtime;
+        return true;
+}
+
+bool usc_file_exists(const char *path)
+{
+        __usc_unused__ struct stat st = { 0 };
+        if (lstat(path, &st) != 0) {
+                return false;
+        }
         return true;
 }
 
