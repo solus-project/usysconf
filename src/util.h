@@ -14,6 +14,13 @@
 #include <stdlib.h>
 
 /**
+ * Fork and execute a command, waiting for it to complete.
+ *
+ * @returns Status code of the command, if it executed.
+ */
+int usc_exec_command(char **command);
+
+/**
  * Taken out of libnica and various other Solus projects
  */
 #define DEF_AUTOFREE(N, C)                                                                         \

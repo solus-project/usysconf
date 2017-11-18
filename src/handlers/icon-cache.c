@@ -34,7 +34,23 @@ static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char 
                                                     const char *full_path)
 {
         autofree(DIR) *dir = NULL;
+        autofree(char) *gtk_bin = NULL;
+        const char *prefix = NULL;
         struct dirent *ent = NULL;
+        char *command[] = {
+                NULL, /* /usr/bin/gtk-update-icon-cache */
+                "-ft",
+                NULL, /* Path */
+                NULL, /* Terminator */
+        };
+
+        prefix = usc_context_get_prefix(ctx);
+        if (asprintf(&gtk_bin, "%s/usr/bin/gtk-update-icon-cache", prefix) < 0) {
+                fputs("OOM\n", stderr);
+                return USC_HANDLER_FAIL;
+        }
+
+        command[0] = gtk_bin;
 
         dir = opendir(full_path);
         if (!dir) {
@@ -67,11 +83,16 @@ static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char 
                         continue;
                 }
 
+                command[2] = dirn;
                 fprintf(stderr, "Checking %s\n", dirn);
+                int ret = usc_exec_command(command);
+                if (ret != 0) {
+                        fprintf(stderr, "Ohnoes\n");
+                }
         }
 
         /* We do nothing *yet* */
-        return USC_HANDLER_FAIL;
+        return USC_HANDLER_SUCCESS;
 }
 
 const UscHandler usc_handler_icon_cache = {

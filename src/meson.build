@@ -6,6 +6,7 @@ usysconf_sources = [
     'context.c',
     'files.c',
     'main.c',
+    'util.c',
 ]
 
 # Push all known handlers into the build
