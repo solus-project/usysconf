@@ -28,6 +28,9 @@ usysconf = executable(
     install: true,
     install_dir: path_sbindir,
     link_args: usysconf_link_args,
+    c_args: [
+        '-fvisibility=default',
+    ],
     include_directories: [
         config_h_dir,
     ],
