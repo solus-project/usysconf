@@ -24,14 +24,10 @@ typedef enum {
 } UscFlags;
 
 /**
- * A UscContext is a transparent object passed around to our trigger functions
- * to organise state
+ * A UscContext is an opaque object passed around to our trigger functions
+ * to organise state.
  */
-typedef struct UscContext {
-        char *prefix; /**< For now just '/', but maybe --root option in future */
-
-        unsigned int flags; /**<A bitwise set of flags specified for the context */
-} UscContext;
+typedef struct UscContext UscContext;
 
 /**
  * Construct a newly allocated UscContext for the given prefix
@@ -48,6 +44,16 @@ UscContext *usc_context_new(const char *prefix);
  * @param context Pointer to an allocated UscContext instance
  */
 void usc_context_free(UscContext *context);
+
+/**
+ * Return the prefix for this UscContext.
+ *
+ * @note This string is owned by the context and should not be freed by callers.
+ *
+ * @param context Pointer to an allocated UscContext instance
+ * @returns Pointer to the prefix
+ */
+const char *usc_context_get_prefix(UscContext *context);
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

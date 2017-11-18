@@ -18,6 +18,17 @@
 
 #include "context.h"
 
+/**
+ * Opaque implementation allows us to avoid potential issues with methods
+ * using our internal state in an invalid fashion, and will also allow us
+ * to enforce const usage.
+ */
+struct UscContext {
+        char *prefix; /**< For now just '/', but maybe --root option in future */
+
+        unsigned int flags; /**<A bitwise set of flags specified for the context */
+};
+
 UscContext *usc_context_new(const char *prefix)
 {
         UscContext *ret = NULL;
@@ -35,12 +46,20 @@ UscContext *usc_context_new(const char *prefix)
         return ret;
 }
 
-void usc_context_free(UscContext *context)
+void usc_context_free(UscContext *self)
 {
-        if (!context) {
+        if (!self) {
                 return;
         }
-        free(context->prefix);
+        free(self->prefix);
+}
+
+const char *usc_context_get_prefix(UscContext *self)
+{
+        if (!self) {
+                return NULL;
+        }
+        return (const char *)self->prefix;
 }
 
 /*
