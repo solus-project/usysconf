@@ -30,7 +30,7 @@ tool, enabling users to apply triggers and bring their system back up to full he
  - [x] Add library functions to help with logging/state/exec/etc
  - [x] Add very basic `mtime` tests for conditionally updating directories
  - [x] Enforce linking against `musl` for tiny binaries. (glibc is huge..)
- - [ ] Drop `prefix` notion and restrict to direct host usage (or chroot)
+ - [x] Drop `prefix` notion and restrict to direct host usage (or chroot)
  - [ ] Drop GNUisms to allow this to actually work (looking at you, `#define _GNU_SOURCE`)
  - [ ] Update TODO.
 

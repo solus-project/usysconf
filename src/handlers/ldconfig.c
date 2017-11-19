@@ -28,36 +28,19 @@ static const char *library_paths[] = {
 /**
  * Update the icon cache on disk for every icon them found in the given directory
  */
-static UscHandlerStatus usc_handler_ldconfig_exec(UscContext *ctx, const char *path,
-                                                  const char *full_path)
+static UscHandlerStatus usc_handler_ldconfig_exec(__usc_unused__ UscContext *ctx, const char *path)
 {
-        autofree(char) *ldbin = NULL;
-        const char *prefix = NULL;
-        autofree(char) *fp = NULL;
         char *command[] = {
-                NULL,             /* /sbin/ldconfig */
-                "-X", "-r", NULL, /* root */
-                NULL,             /* Terminator */
+                "/sbin/ldconfig",
+                "-X", /* don't update symlinks */
+                NULL, /* Terminator */
         };
 
-        if (!usc_file_is_dir(full_path)) {
+        if (!usc_file_is_dir(path)) {
                 return USC_HANDLER_SKIP;
         }
 
-        prefix = usc_context_get_prefix(ctx);
-        if (asprintf(&ldbin, "%s/sbin/ldconfig", prefix) < 0) {
-                fputs("OOM\n", stderr);
-                return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
-        }
-
-        command[0] = ldbin;
-        if (strcmp(prefix, "/") != 0) {
-                command[3] = (char *)prefix;
-        } else {
-                command[2] = NULL;
-        }
-
-        fprintf(stderr, "Checking %s\n", full_path);
+        fprintf(stderr, "Checking %s\n", path);
         int ret = usc_exec_command(command);
         if (ret != 0) {
                 fprintf(stderr, "Ohnoes\n");

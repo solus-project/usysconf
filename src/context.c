@@ -25,12 +25,10 @@
  * to enforce const usage.
  */
 struct UscContext {
-        char *prefix; /**< For now just '/', but maybe --root option in future */
-
         unsigned int flags; /**<A bitwise set of flags specified for the context */
 };
 
-UscContext *usc_context_new(const char *prefix)
+UscContext *usc_context_new()
 {
         UscContext *ret = NULL;
 
@@ -38,21 +36,8 @@ UscContext *usc_context_new(const char *prefix)
         if (!ret) {
                 return NULL;
         }
-        ret->prefix = realpath(prefix, NULL);
-        if (!ret->prefix) {
-                fprintf(stderr, "Unable to determine root: %s (%s)\n", prefix, strerror(errno));
-                usc_context_free(ret);
-                return NULL;
-        }
 
-        /* Examine topology somewhat */
-        if (strcmp(ret->prefix, "/") == 0) {
-                /* If we're using / as root, check its a chroot */
-                if (usc_is_chrooted()) {
-                        ret->flags |= USC_FLAGS_CHROOTED;
-                }
-        } else {
-                /* If root isn't '/', then it's unconditionally considered chroot */
+        if (usc_is_chrooted()) {
                 ret->flags |= USC_FLAGS_CHROOTED;
         }
 
@@ -64,16 +49,7 @@ void usc_context_free(UscContext *self)
         if (!self) {
                 return;
         }
-        free(self->prefix);
         free(self);
-}
-
-const char *usc_context_get_prefix(UscContext *self)
-{
-        if (!self) {
-                return NULL;
-        }
-        return (const char *)self->prefix;
 }
 
 bool usc_context_has_flag(UscContext *self, unsigned int flag)

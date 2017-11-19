@@ -53,8 +53,7 @@ typedef enum {
  *
  * @returns True if the execution handler succeeded
  */
-typedef UscHandlerStatus (*usc_context_func)(UscContext *context, const char *path,
-                                             const char *full_path);
+typedef UscHandlerStatus (*usc_context_func)(UscContext *context, const char *path);
 
 /**
  * UscHandler is currently just demo stuff and we'll flesh it out in time
@@ -75,7 +74,7 @@ typedef struct UscHandler {
  *
  * @returns Newly allocated UscContext. Must be freed with usc_context_free
  */
-UscContext *usc_context_new(const char *prefix);
+UscContext *usc_context_new(void);
 
 /**
  * Free an existing UscContext any associated resources
@@ -83,16 +82,6 @@ UscContext *usc_context_new(const char *prefix);
  * @param context Pointer to an allocated UscContext instance
  */
 void usc_context_free(UscContext *context);
-
-/**
- * Return the prefix for this UscContext.
- *
- * @note This string is owned by the context and should not be freed by callers.
- *
- * @param context Pointer to an allocated UscContext instance
- * @returns Pointer to the prefix
- */
-const char *usc_context_get_prefix(UscContext *context);
 
 /**
  * Determine if the context has a given flag set

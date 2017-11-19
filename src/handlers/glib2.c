@@ -27,32 +27,22 @@ static const char *schema_paths[] = {
 /**
  * Update the icon cache on disk for every icon them found in the given directory
  */
-static UscHandlerStatus usc_handler_glib2_exec(UscContext *ctx, const char *path,
-                                               const char *full_path)
+static UscHandlerStatus usc_handler_glib2_exec(__usc_unused__ UscContext *ctx, const char *path)
 {
-        autofree(char) *gbin = NULL;
-        const char *prefix = NULL;
         autofree(char) *fp = NULL;
         char *command[] = {
-                NULL, /* /usr/bin/glib-compile-schemas */
+                "/usr/bin/glib-compile-schemas",
                 NULL, /* /usr/share/glib-2.0/schemas */
                 NULL, /* Terminator */
         };
 
-        if (!usc_file_is_dir(full_path)) {
+        if (!usc_file_is_dir(path)) {
                 return USC_HANDLER_SKIP;
         }
 
-        prefix = usc_context_get_prefix(ctx);
-        if (asprintf(&gbin, "%s/usr/bin/glib-compile-schemas", prefix) < 0) {
-                fputs("OOM\n", stderr);
-                return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
-        }
+        command[1] = (char *)path,
 
-        command[0] = gbin;
-        command[1] = (char *)full_path,
-
-        fprintf(stderr, "Checking %s\n", full_path);
+        fprintf(stderr, "Checking %s\n", path);
         int ret = usc_exec_command(command);
         if (ret != 0) {
                 fprintf(stderr, "Ohnoes\n");

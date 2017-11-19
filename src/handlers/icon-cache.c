@@ -76,41 +76,31 @@ static int rmdir_and(const char *dir, const char *file)
 /**
  * Update the icon cache on disk for every icon them found in the given directory
  */
-static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char *path,
-                                                    const char *full_path)
+static UscHandlerStatus usc_handler_icon_cache_exec(__usc_unused__ UscContext *ctx,
+                                                    const char *path)
 {
-        autofree(char) *gtk_bin = NULL;
-        const char *prefix = NULL;
         autofree(char) *fp = NULL;
         char *command[] = {
-                NULL, /* /usr/bin/gtk-update-icon-cache */
+                "/usr/bin/gtk-update-icon-cache",
                 "-ft",
                 NULL, /* Path */
                 NULL, /* Terminator */
         };
 
-        if (!usc_file_is_dir(full_path)) {
+        if (!usc_file_is_dir(path)) {
                 return USC_HANDLER_SKIP;
         }
 
-        if (is_orphan_icon_dir(full_path)) {
-                if (rmdir_and(full_path, "icon-theme.cache") != 0) {
-                        fprintf(stderr, "Failed to remove '%s': %s\n", full_path, strerror(errno));
+        if (is_orphan_icon_dir(path)) {
+                if (rmdir_and(path, "icon-theme.cache") != 0) {
+                        fprintf(stderr, "Failed to remove '%s': %s\n", path, strerror(errno));
                         return USC_HANDLER_FAIL;
                 }
-                fprintf(stderr, "Removed orphan icon theme directory: %s\n", full_path);
+                fprintf(stderr, "Removed orphan icon theme directory: %s\n", path);
                 return USC_HANDLER_SUCCESS | USC_HANDLER_DROP;
         }
 
-        prefix = usc_context_get_prefix(ctx);
-        if (asprintf(&gtk_bin, "%s/usr/bin/gtk-update-icon-cache", prefix) < 0) {
-                fputs("OOM\n", stderr);
-                return USC_HANDLER_FAIL;
-        }
-
-        command[0] = gtk_bin;
-
-        if (asprintf(&fp, "%s/index.theme", full_path) < 0) {
+        if (asprintf(&fp, "%s/index.theme", path) < 0) {
                 fputs("OOM\n", stderr);
                 return USC_HANDLER_FAIL;
         }
@@ -120,8 +110,8 @@ static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char 
                 return USC_HANDLER_SKIP;
         }
 
-        command[2] = (char *)full_path;
-        fprintf(stderr, "Checking %s\n", full_path);
+        command[2] = (char *)path;
+        fprintf(stderr, "Checking %s\n", path);
         int ret = usc_exec_command(command);
         if (ret != 0) {
                 fprintf(stderr, "Ohnoes\n");

@@ -34,24 +34,15 @@ static const UscHandler *usc_handlers[] = {
 static void usc_handle_one(const UscHandler *handler, UscContext *context, UscStateTracker *tracker)
 {
         UscHandlerStatus status = USC_HANDLER_MIN;
-        const char *root = NULL;
         bool record_remain = false;
-
-        root = usc_context_get_prefix(context);
 
         for (size_t i = 0; i < handler->n_paths; i++) {
                 glob_t glo = { 0 };
                 const char *path = NULL;
-                autofree(char) *full_path = NULL;
 
                 path = handler->paths[i];
 
-                if (asprintf(&full_path, "%s/%s", root, path) < 0) {
-                        fputs("OOM\n", stderr);
-                        abort();
-                }
-
-                if (glob(full_path, GLOB_NOSORT, NULL, &glo) != 0) {
+                if (glob(path, GLOB_NOSORT, NULL, &glo) != 0) {
                         continue;
                 }
 
@@ -69,7 +60,7 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
                                 continue;
                         }
 
-                        status = handler->exec(context, path, resolved);
+                        status = handler->exec(context, resolved);
 
                         if ((status & USC_HANDLER_SUCCESS) == USC_HANDLER_SUCCESS) {
                                 fprintf(stderr, "Success: %s\n", handler->name);
@@ -113,12 +104,12 @@ int main(__usc_unused__ int argc, __usc_unused__ char **argv)
         autofree(UscContext) *context = NULL;
         autofree(UscStateTracker) *tracker = NULL;
 
-        context = usc_context_new("/");
+        context = usc_context_new();
         if (!context) {
                 fputs("Cannot continue without valid UscContext\n", stderr);
                 return EXIT_FAILURE;
         }
-        tracker = usc_state_tracker_new(context);
+        tracker = usc_state_tracker_new();
         if (!tracker) {
                 fputs("Cannot continue without valid UscStateTracker\n", stderr);
                 return EXIT_FAILURE;

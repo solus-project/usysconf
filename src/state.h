@@ -11,7 +11,6 @@
 
 #pragma once
 
-#include "context.h"
 #include "util.h"
 
 /**
@@ -25,7 +24,7 @@ typedef struct UscStateTracker UscStateTracker;
  *
  * @returns A newly allocated UscStateTracker
  */
-UscStateTracker *usc_state_tracker_new(UscContext *context);
+UscStateTracker *usc_state_tracker_new(void);
 
 /**
  * Free a previously allocated UscStateTracker

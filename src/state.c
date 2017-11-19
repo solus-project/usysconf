@@ -42,27 +42,19 @@ typedef struct UscStateEntry {
  * Opaque implementation details.
  */
 struct UscStateTracker {
-        UscContext *context;
-        char *state_file;
+        const char *state_file;
         UscStateEntry *entry; /**<Root entry in the list */
 };
 
-UscStateTracker *usc_state_tracker_new(UscContext *context)
+UscStateTracker *usc_state_tracker_new(void)
 {
         UscStateTracker *ret = NULL;
 
-        if (!context) {
-                return NULL;
-        }
         ret = calloc(1, sizeof(UscStateTracker));
         if (!ret) {
                 return NULL;
         }
-        /* TODO: Use prefix, i just need local testing for now. */
-        if (asprintf(&ret->state_file, "%s/%s", ".", STATE_FILE) < 0) {
-                usc_state_tracker_free(ret);
-                return NULL;
-        }
+        ret->state_file = STATE_FILE;
         return ret;
 }
 
@@ -151,7 +143,6 @@ void usc_state_tracker_free(UscStateTracker *self)
                 return;
         }
         usc_state_entry_free(self->entry);
-        free(self->state_file);
         free(self);
 }
 
