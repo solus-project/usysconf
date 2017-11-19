@@ -12,12 +12,26 @@
 #define _GNU_SOURCE
 
 #include <errno.h>
+#include <glob.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "context.h"
 #include "files.h"
+#include "state.h"
+
+/* Implemented elsewhere in the codebase */
+extern UscHandler usc_handler_glib2;
+extern UscHandler usc_handler_icon_cache;
+extern UscHandler usc_handler_ldconfig;
+
+/* Table of supported handlers */
+static const UscHandler *usc_handlers[] = {
+        &usc_handler_glib2,
+        &usc_handler_icon_cache,
+        &usc_handler_ldconfig,
+};
 
 /**
  * Opaque implementation allows us to avoid potential issues with methods
@@ -61,6 +75,119 @@ bool usc_context_has_flag(UscContext *self, unsigned int flag)
                 return true;
         }
         return false;
+}
+
+static void usc_handle_one(const UscHandler *handler, UscContext *context, UscStateTracker *tracker)
+{
+        UscHandlerStatus status = USC_HANDLER_MIN;
+        bool record_remain = false;
+
+        for (size_t i = 0; i < handler->n_paths; i++) {
+                glob_t glo = { 0 };
+                const char *path = NULL;
+
+                path = handler->paths[i];
+
+                if (glob(path, GLOB_NOSORT, NULL, &glo) != 0) {
+                        continue;
+                }
+
+                for (size_t i = 0; i < glo.gl_pathc; i++) {
+                        char *resolved = glo.gl_pathv[i];
+                        bool record_path = false;
+
+                        /* Don't try to do anything for the remainder of this glob. */
+                        if (record_remain) {
+                                goto push_entry;
+                        }
+
+                        /* Do we need to handle this dude ? */
+                        if (!usc_state_tracker_needs_update(tracker, resolved)) {
+                                continue;
+                        }
+
+                        status = handler->exec(context, resolved);
+
+                        if ((status & USC_HANDLER_SUCCESS) == USC_HANDLER_SUCCESS) {
+                                fprintf(stderr, "Success: %s\n", handler->name);
+                                record_path = true;
+                        }
+                        if ((status & USC_HANDLER_FAIL) == USC_HANDLER_FAIL) {
+                                fputs("Failed\n", stderr);
+                                continue;
+                        }
+                        if ((status & USC_HANDLER_SKIP) == USC_HANDLER_SKIP) {
+                                fprintf(stderr, "Skipping: %s\n", handler->name);
+                                continue;
+                        }
+
+                        if ((status & USC_HANDLER_BREAK) == USC_HANDLER_BREAK) {
+                                /* TODO: Record all paths as updated */
+                                fprintf(stderr, "breaking..\n");
+                                record_remain = true;
+                        }
+
+                        if (!record_path) {
+                                continue;
+                        }
+
+                push_entry:
+                        /* We won't record the new entry here and we won't write it back out either
+                         */
+                        if ((status & USC_HANDLER_DROP) == USC_HANDLER_DROP) {
+                                continue;
+                        }
+                        if (!usc_state_tracker_push_path(tracker, resolved)) {
+                                fprintf(stderr, "Failed to record path %s\n", resolved);
+                        }
+                }
+                globfree(&glo);
+        }
+}
+
+bool usc_context_run_triggers(UscContext *context, const char *name)
+{
+        autofree(UscStateTracker) *tracker = NULL;
+        bool ran_trigger = false;
+
+        tracker = usc_state_tracker_new();
+        if (!tracker) {
+                fputs("Cannot continue without valid UscStateTracker\n", stderr);
+                return false;
+        }
+
+        /* Crack on regardless. */
+        if (!usc_state_tracker_load(tracker)) {
+                fputs("Invalid state has been removed\n", stderr);
+        }
+
+        if (usc_context_has_flag(context, USC_FLAGS_CHROOTED)) {
+                fputs("Chrooted!\n", stdout);
+        } else {
+                fputs("Not chrooted\n", stdout);
+        }
+
+        /* Just test the main loop iteration jank for now */
+        for (size_t i = 0; i < ARRAY_SIZE(usc_handlers); i++) {
+                if (name && strcmp(usc_handlers[i]->name, name) != 0) {
+                        continue;
+                }
+                usc_handle_one(usc_handlers[i], context, tracker);
+                ran_trigger = true;
+        }
+
+        if (!ran_trigger) {
+                fprintf(stderr, "Unknown trigger '%s'\n", name);
+                return false;
+        }
+
+        /* Dump it back to disk */
+        if (!usc_state_tracker_write(tracker)) {
+                fputs("Failed to write state file!\n", stderr);
+                return false;
+        }
+
+        return true;
 }
 
 /*

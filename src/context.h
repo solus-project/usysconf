@@ -93,6 +93,19 @@ void usc_context_free(UscContext *context);
  */
 bool usc_context_has_flag(UscContext *context, unsigned int flag);
 
+/**
+ * Run triggers within this context
+ *
+ * If @name is NULL, then we will run all given triggers. Otherwise, we will
+ * only attempt to run the named trigger.
+ *
+ * @param context Pointer to an allocated context
+ * @param name Either the name of the trigger, or NULL for all triggers
+ *
+ * @returns True if the operation succeeded
+ */
+bool usc_context_run_triggers(UscContext *context, const char *name);
+
 DEF_AUTOFREE(UscContext, usc_context_free)
 
 /*
