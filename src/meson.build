@@ -10,6 +10,7 @@ usysconf_sources = [
     'state.c',
     'util.c',
     'cli/main.c',
+    'cli/triggers.c',
 ]
 
 # Push all known handlers into the build
