@@ -7,9 +7,9 @@ handlers = [
 usysconf_sources = [
     'context.c',
     'files.c',
-    'main.c',
     'state.c',
     'util.c',
+    'cli/main.c',
 ]
 
 # Push all known handlers into the build
@@ -35,5 +35,6 @@ usysconf = executable(
     ],
     include_directories: [
         config_h_dir,
+        include_directories('.'),
     ],
 )
