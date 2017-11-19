@@ -25,6 +25,11 @@ typedef struct UscSubCommand {
  */
 int usc_cli_run_triggers(int argc, char **argv);
 
+/**
+ * Spam the version the console, because everyone wants to know that.
+ */
+int usc_cli_version(int argc, char **argv);
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

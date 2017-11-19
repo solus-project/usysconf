@@ -20,6 +20,7 @@
 
 static UscSubCommand subcommands[] = {
         { "run", "run triggers", usc_cli_run_triggers },
+        { "version", "print the program version", usc_cli_version },
 };
 
 static size_t n_subcommands = ARRAY_SIZE(subcommands);
@@ -45,7 +46,7 @@ int main(int argc, char **argv)
 
         if (argc < 1) {
                 print_usage();
-                return EXIT_FAILURE;
+                return EXIT_SUCCESS;
         }
 
         command_arg = argv[0];

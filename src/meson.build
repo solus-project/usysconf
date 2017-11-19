@@ -11,6 +11,7 @@ usysconf_sources = [
     'util.c',
     'cli/main.c',
     'cli/triggers.c',
+    'cli/version.c',
 ]
 
 # Push all known handlers into the build
