@@ -25,8 +25,7 @@
  */
 static const char *boot_paths[] = {
         "/usr/lib/kernel",
-        "/usr/bin/bootctl",
-        "/usr/bin/goofiboot",
+        "/usr/lib/goofiboot",
         "/usr/lib/systemd/boot/efi",
 };
 
