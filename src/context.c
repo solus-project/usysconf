@@ -44,6 +44,9 @@ static const UscHandler *usc_handlers[] = {
         &usc_handler_mime,
         &usc_handler_icon_cache,
         &usc_handler_desktop_files,
+
+        /* Special cases */
+        &usc_handler_mandb,
 };
 
 /**

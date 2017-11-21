@@ -29,6 +29,8 @@ extern UscHandler usc_handler_mime;
 extern UscHandler usc_handler_icon_cache;
 extern UscHandler usc_handler_desktop_files;
 
+extern UscHandler usc_handler_mandb;
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

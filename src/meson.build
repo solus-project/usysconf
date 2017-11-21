@@ -11,6 +11,8 @@ handlers = [
     'icon-cache',
     'fonts',
     'desktop-files',
+
+    'mandb',
 ]
 
 
