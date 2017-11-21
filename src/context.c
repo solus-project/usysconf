@@ -28,6 +28,9 @@ static const UscHandler *usc_handlers[] = {
         &usc_handler_cbm,      /**<Now CBM can successfully run */
         &usc_handler_depmod,   /**< Run depmod after cbm does its thing */
 
+        /** Middleware */
+        &usc_handler_ldm, /**<Update drivers/GL-links/etc */
+
         /** Enter userspace. */
         &usc_handler_glib2,
         &usc_handler_icon_cache,

@@ -2,6 +2,7 @@ handlers = [
     'ldconfig',
     'clr-boot-manager',
     'depmod',
+    'linux-driver-management',
     'glib2',
     'icon-cache',
     'fonts',
