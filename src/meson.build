@@ -5,6 +5,7 @@ handlers = [
     'hwdb',
     'linux-driver-management',
     'sysusers',
+    'tmpfiles',
     'mime',
     'glib2',
     'icon-cache',

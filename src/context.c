@@ -32,6 +32,7 @@ static const UscHandler *usc_handlers[] = {
         &usc_handler_hwdb, /**<Want hwdb updated before calling LDM (PCI) */
         &usc_handler_ldm,  /**<Update drivers/GL-links/etc */
         &usc_handler_sysusers,
+        &usc_handler_tmpfiles,
 
         /** Enter userspace. */
         &usc_handler_glib2,
