@@ -27,6 +27,7 @@ extern UscHandler usc_handler_glib2;
 extern UscHandler usc_handler_fonts;
 extern UscHandler usc_handler_mime;
 extern UscHandler usc_handler_icon_cache;
+extern UscHandler usc_handler_desktop_files;
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

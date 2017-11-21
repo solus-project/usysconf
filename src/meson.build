@@ -10,6 +10,7 @@ handlers = [
     'glib2',
     'icon-cache',
     'fonts',
+    'desktop-files',
 ]
 
 
