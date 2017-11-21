@@ -12,6 +12,9 @@ handlers = [
     'fonts',
     'desktop-files',
 
+    'gtk2_immodules',
+    'gtk3_immodules',
+
     'mandb',
     'ssl',
 ]

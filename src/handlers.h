@@ -29,6 +29,9 @@ extern UscHandler usc_handler_mime;
 extern UscHandler usc_handler_icon_cache;
 extern UscHandler usc_handler_desktop_files;
 
+extern UscHandler usc_handler_gtk2_immodules;
+extern UscHandler usc_handler_gtk3_immodules;
+
 extern UscHandler usc_handler_mandb;
 extern UscHandler usc_handler_ssl_certs;
 
