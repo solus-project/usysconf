@@ -31,6 +31,10 @@ static const UscHandler *usc_handlers[] = {
         /** Middleware */
         &usc_handler_hwdb, /**<Want hwdb updated before calling LDM (PCI) */
         &usc_handler_ldm,  /**<Update drivers/GL-links/etc */
+
+        /* Very likely that LDM caused a cache invalidation for lib dirs */
+        &usc_handler_ldconfig,
+
         &usc_handler_sysusers,
         &usc_handler_tmpfiles,
 
