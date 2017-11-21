@@ -1,4 +1,5 @@
 handlers = [
+    'clr-boot-manager',
     'glib2',
     'icon-cache',
     'ldconfig',
