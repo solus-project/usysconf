@@ -68,7 +68,7 @@ static UscHandlerStatus usc_handler_sshd_exec(__usc_unused__ UscContext *ctx, co
 }
 
 const UscHandler usc_handler_sshd = {
-        .name = "hwdb",
+        .name = "openssh",
         .exec = usc_handler_sshd_exec,
         .paths = sshd_paths,
         .n_paths = ARRAY_SIZE(sshd_paths),
