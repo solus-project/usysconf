@@ -52,6 +52,7 @@ static const UscHandler *usc_handlers[] = {
         /* Special cases */
         &usc_handler_mandb,
         &usc_handler_ssl_certs,
+        &usc_handler_sshd,
 };
 
 /**

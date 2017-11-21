@@ -17,6 +17,7 @@ handlers = [
 
     'mandb',
     'ssl',
+    'openssh',
 ]
 
 

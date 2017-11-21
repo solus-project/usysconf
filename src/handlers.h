@@ -34,6 +34,7 @@ extern UscHandler usc_handler_gtk3_immodules;
 
 extern UscHandler usc_handler_mandb;
 extern UscHandler usc_handler_ssl_certs;
+extern UscHandler usc_handler_sshd;
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
