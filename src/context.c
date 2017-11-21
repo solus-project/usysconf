@@ -29,10 +29,10 @@ extern UscHandler usc_handler_ldconfig;
 
 /* Table of supported handlers */
 static const UscHandler *usc_handlers[] = {
+        &usc_handler_ldconfig,
         &usc_handler_cbm,
         &usc_handler_glib2,
         &usc_handler_icon_cache,
-        &usc_handler_ldconfig,
 };
 
 /**
