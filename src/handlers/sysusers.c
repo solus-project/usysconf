@@ -43,7 +43,7 @@ static UscHandlerStatus usc_handler_sysusers_exec(__usc_unused__ UscContext *ctx
                 return USC_HANDLER_SKIP;
         }
 
-        fprintf(stderr, "Compiling hwdb for %s\n", path);
+        fprintf(stderr, "Updating sysusers for %s\n", path);
         int ret = usc_exec_command((char **)command);
         if (ret != 0) {
                 fprintf(stderr, "Ohnoes\n");
