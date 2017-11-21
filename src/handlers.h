@@ -16,6 +16,7 @@
 /* Implemented elsewhere in the codebase */
 extern UscHandler usc_handler_ldconfig;
 extern UscHandler usc_handler_cbm;
+extern UscHandler usc_handler_depmod;
 extern UscHandler usc_handler_glib2;
 extern UscHandler usc_handler_icon_cache;
 

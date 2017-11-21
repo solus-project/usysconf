@@ -24,9 +24,10 @@
 
 /* Table of supported handlers */
 static const UscHandler *usc_handlers[] = {
-        &usc_handler_ldconfig,
-        &usc_handler_cbm,
-        &usc_handler_glib2,
+        &usc_handler_ldconfig, /**<Get library cache in order first */
+        &usc_handler_cbm,      /**<Now CBM can successfully run */
+        &usc_handler_depmod,   /**< Run depmod after cbm does its thing */
+        &usc_handler_glib2,    /**<Enter userspace. */
         &usc_handler_icon_cache,
 };
 

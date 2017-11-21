@@ -1,8 +1,9 @@
 handlers = [
+    'ldconfig',
     'clr-boot-manager',
+    'depmod',
     'glib2',
     'icon-cache',
-    'ldconfig',
 ]
 
 
