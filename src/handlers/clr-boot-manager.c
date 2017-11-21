@@ -35,7 +35,6 @@ static const char *boot_paths[] = {
  */
 static UscHandlerStatus usc_handler_cbm_exec(__usc_unused__ UscContext *ctx, const char *path)
 {
-        autofree(char) *fp = NULL;
         char *command[] = {
                 "/usr/bin/clr-boot-manager", "update", NULL, /* Terminator */
         };
