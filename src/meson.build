@@ -13,6 +13,7 @@ handlers = [
     'desktop-files',
 
     'mandb',
+    'ssl',
 ]
 
 

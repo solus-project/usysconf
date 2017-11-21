@@ -30,6 +30,7 @@ extern UscHandler usc_handler_icon_cache;
 extern UscHandler usc_handler_desktop_files;
 
 extern UscHandler usc_handler_mandb;
+extern UscHandler usc_handler_ssl_certs;
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
