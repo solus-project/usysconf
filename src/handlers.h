@@ -20,6 +20,7 @@ extern UscHandler usc_handler_depmod;
 
 extern UscHandler usc_handler_hwdb;
 extern UscHandler usc_handler_ldm;
+extern UscHandler usc_handler_sysusers;
 
 extern UscHandler usc_handler_glib2;
 extern UscHandler usc_handler_fonts;

@@ -4,6 +4,7 @@ handlers = [
     'depmod',
     'hwdb',
     'linux-driver-management',
+    'sysusers',
     'mime',
     'glib2',
     'icon-cache',
