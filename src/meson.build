@@ -4,6 +4,7 @@ handlers = [
     'depmod',
     'glib2',
     'icon-cache',
+    'fonts',
 ]
 
 
