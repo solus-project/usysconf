@@ -23,7 +23,7 @@
 /**
  * Paths that trigger a clr-boot-manager update
  */
-static const char *schema_paths[] = {
+static const char *boot_paths[] = {
         "/usr/lib/kernel",
         "/usr/bin/bootctl",
         "/usr/bin/goofiboot",
@@ -57,8 +57,8 @@ static UscHandlerStatus usc_handler_cbm_exec(__usc_unused__ UscContext *ctx, con
 const UscHandler usc_handler_cbm = {
         .name = "clr-boot-manager",
         .exec = usc_handler_cbm_exec,
-        .paths = schema_paths,
-        .n_paths = ARRAY_SIZE(schema_paths),
+        .paths = boot_paths,
+        .n_paths = ARRAY_SIZE(boot_paths),
 };
 
 /*
