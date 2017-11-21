@@ -3,6 +3,7 @@ handlers = [
     'clr-boot-manager',
     'depmod',
     'linux-driver-management',
+    'mime',
     'glib2',
     'icon-cache',
     'fonts',
