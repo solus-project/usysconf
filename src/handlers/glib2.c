@@ -25,7 +25,7 @@ static const char *schema_paths[] = {
 };
 
 /**
- * Update the icon cache on disk for every icon them found in the given directory
+ * Compile glib schemas whenever the directory is updated
  */
 static UscHandlerStatus usc_handler_glib2_exec(__usc_unused__ UscContext *ctx, const char *path)
 {

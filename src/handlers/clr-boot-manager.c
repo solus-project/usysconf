@@ -31,7 +31,8 @@ static const char *boot_paths[] = {
 };
 
 /**
- * Update the icon cache on disk for every icon them found in the given directory
+ * Trigger `clr-boot-manager update` when one of the boot-relevant components
+ * has been altered within the upstream delivery mechanism.
  */
 static UscHandlerStatus usc_handler_cbm_exec(__usc_unused__ UscContext *ctx, const char *path)
 {

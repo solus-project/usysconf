@@ -26,7 +26,7 @@ static const char *library_paths[] = {
 };
 
 /**
- * Update the icon cache on disk for every icon them found in the given directory
+ * Update the linker cache (`/sbin/ldconfig`) when library directories update
  */
 static UscHandlerStatus usc_handler_ldconfig_exec(__usc_unused__ UscContext *ctx, const char *path)
 {

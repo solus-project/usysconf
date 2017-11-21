@@ -26,7 +26,8 @@ static const char *module_paths[] = {
 };
 
 /**
- * Update the icon cache on disk for every icon them found in the given directory
+ * Update the module cache within the kernel directory to ensure new modules
+ * are readily available.
  */
 static UscHandlerStatus usc_handler_depmod_exec(__usc_unused__ UscContext *ctx, const char *path)
 {
