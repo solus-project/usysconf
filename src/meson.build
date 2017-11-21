@@ -2,6 +2,7 @@ handlers = [
     'ldconfig',
     'clr-boot-manager',
     'depmod',
+    'hwdb',
     'linux-driver-management',
     'mime',
     'glib2',
