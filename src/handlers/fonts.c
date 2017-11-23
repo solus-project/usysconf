@@ -21,7 +21,8 @@
 #include "util.h"
 
 static const char *font_paths[] = {
-        "/usr/share/fonts",
+        "/usr/share/fonts/*/*",
+        "/usr/share/fonts/*",
 };
 
 /**
