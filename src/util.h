@@ -11,7 +11,10 @@
 
 #pragma once
 
+#define _GNU_SOURCE
+
 #include <stdlib.h>
+#include <sys/types.h>
 
 /**
  * Fork and execute a command, waiting for it to complete.
@@ -19,6 +22,16 @@
  * @returns Status code of the command, if it executed.
  */
 int usc_exec_command(char **command);
+
+/**
+ * Grab the (0-based) indexed path component from the string
+ * and return a copy of it
+ *
+ * @note Will return NULL if the component is out of range
+ *
+ * @returns Duplicated string with the indexed path component
+ */
+char *usc_get_strn_component(const char *inp_path, ssize_t whence);
 
 /**
  * Taken out of libnica and various other Solus projects

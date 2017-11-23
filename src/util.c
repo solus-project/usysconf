@@ -9,8 +9,11 @@
  * (at your option) any later version.
  */
 
+#define _GNU_SOURCE
+
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -54,6 +57,33 @@ int usc_exec_command(char **command)
         }
 
         return ret;
+}
+
+char *usc_get_strn_component(const char *inp_path, ssize_t whence)
+{
+        char *c = NULL;
+        char *snd = NULL;
+        ssize_t i;
+
+        c = (char *)inp_path;
+
+        for (i = 0; i <= whence; i++) {
+                c = strchr(c, '/');
+                if (!c) {
+                        return NULL;
+                }
+                c++;
+        }
+
+        if (i != whence + 1) {
+                return NULL;
+        }
+
+        snd = strchr(c, '/');
+        if (snd) {
+                return strndup(c, (size_t)(snd - c));
+        }
+        return strdup(c);
 }
 
 /*
