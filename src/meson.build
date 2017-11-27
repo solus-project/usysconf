@@ -1,4 +1,5 @@
 xdg_handlers = [
+    'gconf',
     'glib2',
     'mime',
     'icon-cache',

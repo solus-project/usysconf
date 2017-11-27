@@ -66,6 +66,7 @@ static const UscHandler *usc_handlers[] = {
         &usc_handler_mime,
         &usc_handler_icon_cache,
         &usc_handler_desktop_files,
+        &usc_handler_gconf,
 
         /* GTK immodules */
         &usc_handler_gtk2_immodules,
