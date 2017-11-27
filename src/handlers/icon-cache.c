@@ -22,6 +22,8 @@
 #include "util.h"
 
 static const char *icon_cache_paths[] = {
+        "/usr/share/icons/hicolor/*/*", /* per app */
+        "/usr/share/icons/gnome/*/*",   /* per app */
         "/usr/share/icons/*",
 };
 
@@ -76,10 +78,11 @@ static int rmdir_and(const char *dir, const char *file)
 /**
  * Update the icon cache on disk for every icon them found in the given directory
  */
-static UscHandlerStatus usc_handler_icon_cache_exec(__usc_unused__ UscContext *ctx,
-                                                    const char *path)
+static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char *path)
 {
-        autofree(char) *fp = NULL;
+        autofree(char) *theme_name = NULL;
+        autofree(char) *theme_index = NULL;
+        autofree(char) *theme_dir = NULL;
         char *command[] = {
                 "/usr/bin/gtk-update-icon-cache",
                 "-ftq",
@@ -91,27 +94,51 @@ static UscHandlerStatus usc_handler_icon_cache_exec(__usc_unused__ UscContext *c
                 return USC_HANDLER_SKIP;
         }
 
-        if (is_orphan_icon_dir(path)) {
-                if (rmdir_and(path, "icon-theme.cache") != 0) {
-                        fprintf(stderr, "Failed to remove '%s': %s\n", path, strerror(errno));
-                        return USC_HANDLER_FAIL;
-                }
-                fprintf(stderr, "Removed orphan icon theme directory: %s\n", path);
-                return USC_HANDLER_SUCCESS | USC_HANDLER_DROP;
-        }
-
-        if (asprintf(&fp, "%s/index.theme", path) < 0) {
+        /* We're not interested in subdirs in our execution call */
+        theme_name = usc_get_strn_component(path, 3);
+        if (!theme_name) {
                 fputs("OOM\n", stderr);
                 return USC_HANDLER_FAIL;
         }
 
+        /* Grab the theme dir now */
+        if (asprintf(&theme_dir, "/usr/share/icons/%s", theme_name) < 0) {
+                fputs("OOM\n", stderr);
+                return USC_HANDLER_FAIL;
+        }
+
+        /* Index theme too */
+        if (asprintf(&theme_index, "%s/index.theme", theme_dir) < 0) {
+                fputs("OOM\n", stderr);
+                return USC_HANDLER_FAIL;
+        }
+
+        /* We'll only record our skip for valid paths */
+        if (usc_context_should_skip(ctx, theme_dir)) {
+                return USC_HANDLER_SUCCESS;
+        }
+
+        if (!usc_context_push_skip(ctx, theme_dir)) {
+                return USC_HANDLER_FAIL;
+        }
+
+        /* Is this a stray icon theme dir? */
+        if (is_orphan_icon_dir(theme_dir)) {
+                if (rmdir_and(theme_dir, "icon-theme.cache") != 0) {
+                        fprintf(stderr, "Failed to remove '%s': %s\n", theme_dir, strerror(errno));
+                        return USC_HANDLER_FAIL;
+                }
+                fprintf(stderr, "Removed orphan icon theme directory: %s\n", theme_dir);
+                return USC_HANDLER_SUCCESS | USC_HANDLER_DROP;
+        }
+
         /* Require an index theme. */
-        if (!usc_file_exists(fp)) {
+        if (!usc_file_exists(theme_index)) {
                 return USC_HANDLER_SKIP;
         }
 
-        command[2] = (char *)path;
-        fprintf(stderr, "Checking %s\n", path);
+        command[2] = (char *)theme_dir;
+        fprintf(stderr, "Updating icon cache: %s\n", theme_name);
         int ret = usc_exec_command(command);
         if (ret != 0) {
                 fprintf(stderr, "Ohnoes\n");
