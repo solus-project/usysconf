@@ -152,7 +152,6 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
                         status = handler->exec(context, resolved);
 
                         if ((status & USC_HANDLER_SUCCESS) == USC_HANDLER_SUCCESS) {
-                                fprintf(stderr, "Success: %s\n", handler->name);
                                 record_path = true;
                         }
                         if ((status & USC_HANDLER_FAIL) == USC_HANDLER_FAIL) {
@@ -160,13 +159,11 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
                                 continue;
                         }
                         if ((status & USC_HANDLER_SKIP) == USC_HANDLER_SKIP) {
-                                fprintf(stderr, "Skipping: %s\n", handler->name);
                                 continue;
                         }
 
                         if ((status & USC_HANDLER_BREAK) == USC_HANDLER_BREAK) {
-                                /* TODO: Record all paths as updated */
-                                fprintf(stderr, "breaking..\n");
+                                /* Record all paths as updated */
                                 record_remain = true;
                         }
 
