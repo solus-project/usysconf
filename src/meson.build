@@ -27,8 +27,8 @@ endif
 # We'll still enable hwdb but alter for udev path if not using systemd
 if with_systemd == true
     handlers += [
-        'tmpfiles',
-        'sysusers',
+        'systemd/tmpfiles',
+        'systemd/sysusers',
     ]
 endif
 
