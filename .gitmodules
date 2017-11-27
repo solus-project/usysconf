@@ -1,0 +1,3 @@
+[submodule "subprojects/libuf"]
+	path = subprojects/libuf
+	url = https://github.com/ikeydoherty/libuf.git
