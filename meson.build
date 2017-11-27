@@ -71,6 +71,9 @@ libuf = subproject('libuf',
     ]
 )
 
+with_cbm = get_option('with-clr-boot-manager')
+with_ldm = get_option('with-linux-driver-management')
+
 # Now go build the source
 subdir('src')
 
@@ -83,6 +86,12 @@ report = [
     '    sysconfdir:                             @0@'.format(path_sysconfdir),
     '    sbindir:                                @0@'.format(path_sbindir),
     '    static binary:                          @0@'.format(with_static_binary),
+    '',
+    '    Extra modules:',
+    '    ==============',
+    '',
+    '    clr-boot-manager:                       @0@'.format(with_cbm),
+    '    linux-driver-management:                @0@'.format(with_ldm),
 ]
 
 # Output some stuff to validate the build config

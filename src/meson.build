@@ -1,9 +1,7 @@
 handlers = [
     'ldconfig',
-    'clr-boot-manager',
     'depmod',
     'hwdb',
-    'linux-driver-management',
     'sysusers',
     'tmpfiles',
     'mime',
@@ -20,6 +18,13 @@ handlers = [
     'openssh',
 ]
 
+if with_cbm == true
+    handlers += 'clr-boot-manager'
+endif
+
+if with_ldm == true
+    handlers += 'linux-driver-management'
+endif
 
 libusysconf_sources = [
     'context.c',
