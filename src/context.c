@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
 #include "context.h"
 #include "files.h"
 #include "handlers.h"
@@ -45,8 +46,11 @@ static const UscHandler *usc_handlers[] = {
         /* Very likely that LDM caused a cache invalidation for lib dirs */
         &usc_handler_ldconfig,
 
+#ifdef HAVE_SYSTEMD
         &usc_handler_sysusers,
         &usc_handler_tmpfiles,
+        &usc_handler_systemd_reload,
+#endif
 
         /** Enter userspace. */
         &usc_handler_glib2,

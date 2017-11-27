@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "config.h"
 #include "context.h"
 
 /* Implemented elsewhere in the codebase */
@@ -20,8 +21,12 @@ extern UscHandler usc_handler_depmod;
 
 extern UscHandler usc_handler_hwdb;
 extern UscHandler usc_handler_ldm;
+
+#ifdef HAVE_SYSTEMD
 extern UscHandler usc_handler_sysusers;
 extern UscHandler usc_handler_tmpfiles;
+extern UscHandler usc_handler_systemd_reload;
+#endif
 
 extern UscHandler usc_handler_glib2;
 extern UscHandler usc_handler_fonts;
