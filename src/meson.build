@@ -1,16 +1,17 @@
+xdg_handlers = [
+    'glib2',
+    'mime',
+    'icon-cache',
+    'fonts',
+    'desktop-files',
+    'gtk2_immodules',
+    'gtk3_immodules',
+]
+
 handlers = [
     'ldconfig',
     'depmod',
     'hwdb',
-    'mime',
-    'glib2',
-    'icon-cache',
-    'fonts',
-    'desktop-files',
-
-    'gtk2_immodules',
-    'gtk3_immodules',
-
     'mandb',
     'ssl',
     'openssh',
@@ -42,6 +43,11 @@ libusysconf_sources = [
 # Push all known handlers into the build
 foreach handler : handlers
     libusysconf_sources += 'handlers/@0@.c'.format(handler)
+endforeach
+
+# Stick all the xdg guys in
+foreach xdg_handler : xdg_handlers
+    libusysconf_sources += 'handlers/xdg/@0@.c'.format(xdg_handler)
 endforeach
 
 usysconf_link_args = []
