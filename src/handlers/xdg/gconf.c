@@ -28,7 +28,6 @@
 static const char *gconf_paths[] = { "/etc/gconf/schemas", "/usr/share/gconf/schemas" };
 
 #define GCONF_PRIMARY_TREE "/etc/gconf/gconf.xml.defaults"
-#define GCONF_INDEX GCONF_PRIMARY_TREE "/%gconf-tree.xml"
 #define MERGE_PTR "xml:merged:" GCONF_PRIMARY_TREE
 
 DEF_AUTOFREE(DIR, closedir)
