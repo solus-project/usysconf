@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "config.h"
 #include "context.h"
 #include "files.h"
 #include "util.h"
@@ -24,7 +25,7 @@
  * Paths that trigger a clr-boot-manager update
  */
 static const char *boot_paths[] = {
-        "/usr/lib/kernel",
+        KERNEL_DIR,
         "/usr/lib/goofiboot",
         "/usr/lib/systemd/boot/efi",
 };

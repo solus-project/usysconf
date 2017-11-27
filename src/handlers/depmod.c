@@ -16,15 +16,16 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "config.h"
 #include "context.h"
 #include "files.h"
 #include "util.h"
 
 static const char *module_paths[] = {
         /* Glob all module directories and track individually */
-        "/lib/modules/*",
-        "/lib/modules/*/*",                /* ./extra/ */
-        "/lib/modules/*/kernel/drivers/*", /* i.e. nvidia in video dir */
+        KERNEL_MODULES_DIR "/*",
+        KERNEL_MODULES_DIR "/*/*",                /* ./extra/ */
+        KERNEL_MODULES_DIR "/*/kernel/drivers/*", /* i.e. nvidia in video dir */
 };
 
 /**

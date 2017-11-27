@@ -62,6 +62,11 @@ if with_systemd == true
     cdata.set('HAVE_SYSTEMD', '1')
 endif
 
+with_kernel_modules_dir = get_option('with-kernel-modules-dir')
+with_kernel_dir = get_option('with-kernel-dir')
+cdata.set_quoted('KERNEL_MODULES_DIR', with_kernel_modules_dir)
+cdata.set_quoted('KERNEL_DIR', with_kernel_dir)
+
 # Write config.h now
 config_h = configure_file(
      configuration: cdata,
@@ -97,6 +102,12 @@ report = [
     '    clr-boot-manager:                       @0@'.format(with_cbm),
     '    linux-driver-management:                @0@'.format(with_ldm),
     '    systemd support:                        @0@'.format(with_systemd),
+    '',
+    '    Kernel configuration:',
+    '    =====================',
+    '',
+    '    modules directory:                      @0@'.format(with_kernel_dir),
+    '    kernel directory:                       @0@'.format(with_kernel_modules_dir),
 ]
 
 # Output some stuff to validate the build config
