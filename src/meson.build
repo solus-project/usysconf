@@ -57,6 +57,9 @@ libusysconf = static_library(
     c_args: [
         '-fvisibility=default',
     ],
+    dependencies: [
+        libuf.get_variable('link_libuf'),
+    ],
     include_directories: libusysconf_includes,
 )
 

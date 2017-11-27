@@ -22,6 +22,9 @@
 #include "handlers.h"
 #include "state.h"
 
+/* libuf */
+#include "map.h"
+
 /* Table of supported handlers */
 static const UscHandler *usc_handlers[] = {
         &usc_handler_ldconfig, /**<Get library cache in order first */
@@ -62,6 +65,8 @@ static const UscHandler *usc_handlers[] = {
  */
 struct UscContext {
         unsigned int flags; /**<A bitwise set of flags specified for the context */
+
+        UfHashmap *skip_map; /**<Allow implementations to track skips */
 };
 
 UscContext *usc_context_new()
@@ -77,6 +82,14 @@ UscContext *usc_context_new()
                 ret->flags |= USC_FLAGS_CHROOTED;
         }
 
+        /* Skip map only contains a 1 value */
+        ret->skip_map =
+            uf_hashmap_new_full(uf_hashmap_string_hash, uf_hashmap_string_equal, free, NULL);
+        if (!ret->skip_map) {
+                usc_context_free(ret);
+                return NULL;
+        }
+
         return ret;
 }
 
@@ -85,6 +98,7 @@ void usc_context_free(UscContext *self)
         if (!self) {
                 return;
         }
+        uf_hashmap_free(self->skip_map);
         free(self);
 }
 
