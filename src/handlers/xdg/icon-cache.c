@@ -27,8 +27,6 @@ static const char *icon_cache_paths[] = {
         "/usr/share/icons/*",
 };
 
-DEF_AUTOFREE(DIR, closedir)
-
 static bool is_orphan_icon_dir(const char *directory)
 {
         int n_items = 0;

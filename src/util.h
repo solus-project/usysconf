@@ -13,6 +13,7 @@
 
 #define _GNU_SOURCE
 
+#include <dirent.h>
 #include <stdlib.h>
 #include <sys/types.h>
 
@@ -52,6 +53,7 @@ char *usc_get_strn_component(const char *inp_path, ssize_t whence);
 #define __usc_unused__ __attribute__((unused))
 
 DEF_AUTOFREE(char, free)
+DEF_AUTOFREE(DIR, closedir)
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
