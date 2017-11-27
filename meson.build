@@ -56,7 +56,13 @@ cdata.set_quoted('PACKAGE_URL', 'https://solus-project.com')
 with_static_binary = get_option('with-static-binary')
 
 with_cbm = get_option('with-clr-boot-manager')
+if with_cbm == true
+    cdata.set('HAVE_CBM', '1')
+endif
 with_ldm = get_option('with-linux-driver-management')
+if with_ldm == true
+    cdata.set('HAVE_LDM', '1')
+endif
 with_systemd = get_option('with-systemd')
 if with_systemd == true
     cdata.set('HAVE_SYSTEMD', '1')

@@ -16,11 +16,18 @@
 
 /* Implemented elsewhere in the codebase */
 extern UscHandler usc_handler_ldconfig;
+
+#ifdef HAVE_CBM
 extern UscHandler usc_handler_cbm;
+#endif
+
 extern UscHandler usc_handler_depmod;
 
 extern UscHandler usc_handler_hwdb;
+
+#ifdef HAVE_LDM
 extern UscHandler usc_handler_ldm;
+#endif
 
 #ifdef HAVE_SYSTEMD
 extern UscHandler usc_handler_sysusers;
