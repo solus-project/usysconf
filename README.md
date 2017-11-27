@@ -55,9 +55,9 @@ Checkmark means work is unblocked for this item.
  - [x] cups (just switch to sysusers/tmpfiles)
  - [ ] kernel-glue
  - [ ] baselayout
- - [ ] dcron (consider killing with fire)
+ - [x] dcron (consider killing with fire, convert to sysusers/tmpfile)
  - [x] gconf
- - [ ] mlocate (not sure how much we actually care about this.)
+ - [x] mlocate (remove trigger completely, sysusers the mlocale group)
  - [ ] pisi (currently unkillable until we build muxer)
 
 
