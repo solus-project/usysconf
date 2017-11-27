@@ -35,11 +35,14 @@ tool, enabling users to apply triggers and bring their system back up to full he
 
 #### Affected packages in Solus
 
- - [ ] nvidia-glx-driver
- - [ ] nvidia-304-glx-driver
- - [ ] nvidia-340-glx-driver
- - [ ] mesalib
- - [ ] xorg-server
+**linux-driver-management hook:**
+
+ - [x] nvidia-glx-driver
+ - [x] nvidia-304-glx-driver
+ - [x] nvidia-340-glx-driver
+ - [x] mesalib
+ - [x] xorg-server
+ 
  - [ ] openssh
  - [ ] kernel-glue
  - [ ] fontconfig
