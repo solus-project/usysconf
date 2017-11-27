@@ -56,7 +56,7 @@ Checkmark means work is unblocked for this item.
  - [ ] kernel-glue
  - [ ] baselayout
  - [ ] dcron (consider killing with fire)
- - [ ] gconf
+ - [x] gconf
  - [ ] mlocate (not sure how much we actually care about this.)
  - [ ] pisi (currently unkillable until we build muxer)
 
