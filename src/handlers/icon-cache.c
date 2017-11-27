@@ -82,7 +82,7 @@ static UscHandlerStatus usc_handler_icon_cache_exec(__usc_unused__ UscContext *c
         autofree(char) *fp = NULL;
         char *command[] = {
                 "/usr/bin/gtk-update-icon-cache",
-                "-ft",
+                "-ftq",
                 NULL, /* Path */
                 NULL, /* Terminator */
         };
