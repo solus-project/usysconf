@@ -106,6 +106,32 @@ bool usc_context_has_flag(UscContext *context, unsigned int flag);
  */
 bool usc_context_run_triggers(UscContext *context, const char *name);
 
+/**
+ * Handlers are free to use this method as they see fit, with the primary
+ * purpose to register some path item they don't want to visit multiple
+ * times.
+ *
+ * This is primarily used to implement a more granular deduplication
+ * at the handler level when using wild glob patterns.
+ *
+ * @param context Pointer to an allocated UscContext instance
+ * @param skip_item New skip item to register. A copy will be taken.
+ *
+ * @returns True if there was no memory issue.
+ */
+bool usc_context_push_skip(UscContext *context, char *skip_item);
+
+/**
+ * If an item is registered with usc_context_push_skip, this function
+ * will return true if the path matches.
+ *
+ * @param context Pointer to an allocated UscContext instance
+ * @param skip_item Skip item to check
+ *
+ * @returns True if the item should be skipped.
+ */
+bool usc_context_should_skip(UscContext *context, char *skip_item);
+
 DEF_AUTOFREE(UscContext, usc_context_free)
 
 /*

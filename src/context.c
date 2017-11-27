@@ -25,6 +25,13 @@
 /* libuf */
 #include "map.h"
 
+/**
+ * TODO: Expose this more generically through libuf API
+ */
+#ifndef UF_INT_TO_PTR
+#define UF_INT_TO_PTR(x) ((void *)((uintptr_t)x))
+#endif
+
 /* Table of supported handlers */
 static const UscHandler *usc_handlers[] = {
         &usc_handler_ldconfig, /**<Get library cache in order first */
@@ -224,6 +231,23 @@ bool usc_context_run_triggers(UscContext *context, const char *name)
         }
 
         return true;
+}
+
+bool usc_context_push_skip(UscContext *self, char *skip_item)
+{
+        if (!self) {
+                return false;
+        }
+        return uf_hashmap_put(self->skip_map, strdup(skip_item), UF_INT_TO_PTR(1));
+}
+
+bool usc_context_should_skip(UscContext *self, char *skip_item)
+{
+        if (!self) {
+                return false;
+        }
+        /* Only 0==NULL on glibc, 1 will be set and thus not NULL */
+        return uf_hashmap_get(self->skip_map, skip_item) != NULL;
 }
 
 /*
