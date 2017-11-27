@@ -23,19 +23,18 @@
 static const char *module_paths[] = {
         /* Glob all module directories and track individually */
         "/lib/modules/*",
+        "/lib/modules/*/*",                /* ./extra/ */
+        "/lib/modules/*/kernel/drivers/*", /* i.e. nvidia in video dir */
 };
 
 /**
  * Update the module cache within the kernel directory to ensure new modules
  * are readily available.
  */
-static UscHandlerStatus usc_handler_depmod_exec(__usc_unused__ UscContext *ctx, const char *path)
+static UscHandlerStatus usc_handler_depmod_exec(UscContext *ctx, const char *path)
 {
         autofree(char) *kern_dir = NULL;
-        autofree(char) *base_dup = NULL;
-        char *base_nom = NULL;
-
-        /* TODO: Support basedir */
+        autofree(char) *kernel_nom = NULL;
         char *command[] = {
                 "/sbin/depmod",
                 "-A", /* only probe new fellers */
@@ -43,7 +42,13 @@ static UscHandlerStatus usc_handler_depmod_exec(__usc_unused__ UscContext *ctx, 
                 NULL, /* Terminator */
         };
 
-        if (asprintf(&kern_dir, "%s/kernel", path) < 0) {
+        /* Grab the kernel name for this set */
+        kernel_nom = usc_get_strn_component(path, 2);
+        if (!kernel_nom) {
+                return USC_HANDLER_FAIL;
+        }
+
+        if (asprintf(&kern_dir, "/lib/modules/%s/kernel", kernel_nom) < 0) {
                 fputs("OOM\n", stderr);
                 return USC_HANDLER_FAIL;
         }
@@ -52,23 +57,25 @@ static UscHandlerStatus usc_handler_depmod_exec(__usc_unused__ UscContext *ctx, 
                 return USC_HANDLER_SKIP;
         }
 
-        /* Grab the base name here so we know what to tell depmod */
-        base_dup = strdup(path);
-        if (!base_dup) {
-                fputs("OOM\n", stderr);
-                return USC_HANDLER_FAIL;
+        /* We'll only record our skip for valid paths */
+        if (usc_context_should_skip(ctx, kern_dir)) {
+                return USC_HANDLER_SUCCESS;
         }
-        base_nom = basename(base_dup);
 
         /* Assign path argument. */
-        command[2] = (char *)base_nom;
+        command[2] = (char *)kernel_nom;
 
-        fprintf(stderr, "Running depmod on %s\n", base_nom);
+        if (!usc_context_push_skip(ctx, kern_dir)) {
+                return USC_HANDLER_FAIL;
+        }
+
+        fprintf(stderr, "Running depmod on %s\n", kernel_nom);
         int ret = usc_exec_command(command);
         if (ret != 0) {
                 fprintf(stderr, "Ohnoes\n");
                 return USC_HANDLER_FAIL;
         }
+
         /* Need to run for all of our globs */
         return USC_HANDLER_SUCCESS;
 }
