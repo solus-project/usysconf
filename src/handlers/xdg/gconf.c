@@ -40,6 +40,7 @@ static int rm_dir_kids(const char *dir)
         autofree(DIR) *d = NULL;
         struct dirent *ent = NULL;
         int fd = 0;
+        int r = 0;
 
         d = opendir(dir);
         if (!d) {
@@ -58,8 +59,6 @@ static int rm_dir_kids(const char *dir)
                 if (!strstr(ent->d_name, ".xml")) {
                         continue;
                 }
-                int r;
-
                 if ((r = unlinkat(fd, ent->d_name, 0)) != 0) {
                         return r;
                 }
