@@ -29,7 +29,6 @@ am_cflags = [
     '-Wunused-variable',
     '-Wunreachable-code',
     '-W',
-    '-D_FORTIFY_SOURCE=2',
 ]
 
 # Add our main flags
