@@ -21,6 +21,10 @@ extern UscHandler usc_handler_ldconfig;
 extern UscHandler usc_handler_cbm;
 #endif
 
+#ifdef HAVE_QOL_ASSIST
+extern UscHandler usc_handler_qol_assist;
+#endif
+
 extern UscHandler usc_handler_depmod;
 
 extern UscHandler usc_handler_hwdb;

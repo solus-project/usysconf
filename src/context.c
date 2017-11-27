@@ -41,6 +41,10 @@ static const UscHandler *usc_handlers[] = {
         &usc_handler_cbm, /**<Now CBM can successfully run */
 #endif
 
+#ifdef HAVE_QOL_ASSIST
+        &usc_handler_qol_assist, /**<Schedule migration on boot */
+#endif
+
         &usc_handler_depmod, /**< Run depmod after cbm does its thing */
 
         /** Middleware */

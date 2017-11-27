@@ -26,6 +26,10 @@ if with_cbm == true
     kernel_handlers += 'clr-boot-manager'
 endif
 
+if with_qol == true
+    handlers += 'qol-assist'
+endif
+
 if with_ldm == true
     handlers += 'linux-driver-management'
 endif
