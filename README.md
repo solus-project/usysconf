@@ -31,8 +31,32 @@ tool, enabling users to apply triggers and bring their system back up to full he
  - [x] Add very basic `mtime` tests for conditionally updating directories
  - [x] Enforce linking against `musl` for tiny binaries. (glibc is huge..)
  - [x] Drop `prefix` notion and restrict to direct host usage (or chroot)
- - [ ] Drop GNUisms to allow this to actually work (looking at you, `#define _GNU_SOURCE`)
- - [ ] Update TODO.
+ - [ ] Make sure the following list is fully accounted for by usysconf
+
+#### Affected packages in Solus
+
+ - [ ] nvidia-glx-driver
+ - [ ] nvidia-304-glx-driver
+ - [ ] nvidia-340-glx-driver
+ - [ ] mesalib
+ - [ ] xorg-server
+ - [ ] openssh
+ - [ ] kernel-glue
+ - [ ] fontconfig
+ - [ ] ca-certs
+ - [ ] comar
+ - [ ] baselayout
+ - [ ] gtk2
+ - [ ] gtk3
+ - [ ] desktop-file-utils
+ - [ ] pisi
+ - [ ] dcron
+ - [ ] gconf
+ - [ ] glib2
+ - [ ] mlocate
+ - [ ] hicolor-icon-theme
+ - [ ] cups
+
 
 ## Authors
 
