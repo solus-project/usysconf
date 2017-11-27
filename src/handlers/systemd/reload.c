@@ -32,9 +32,7 @@ static const char *unit_paths[] = {
 static UscHandlerStatus usc_handler_systemd_reload_exec(UscContext *ctx, const char *path)
 {
         const char *command[] = {
-                "/usr/bin/systemctl",
-                "daemon-reload", /* Create systemd_reload */
-                NULL,            /* Terminator */
+                "/usr/bin/systemctl", "daemon-reload", NULL, /* Terminator */
         };
 
         if (!usc_file_is_dir(path)) {
