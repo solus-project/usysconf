@@ -18,13 +18,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "config.h"
 #include "files.h"
 #include "state.h"
-
-/**
- * TODO: Have this in /var and a define option
- */
-#define STATE_FILE "state"
 
 DEF_AUTOFREE(FILE, fclose)
 
@@ -54,7 +50,7 @@ UscStateTracker *usc_state_tracker_new(void)
         if (!ret) {
                 return NULL;
         }
-        ret->state_file = STATE_FILE;
+        ret->state_file = USYSCONF_STATUS_FILE;
         return ret;
 }
 
@@ -149,6 +145,11 @@ void usc_state_tracker_free(UscStateTracker *self)
 bool usc_state_tracker_write(UscStateTracker *self)
 {
         autofree(FILE) *fp = NULL;
+
+        if (!usc_file_exists(USYSCONF_TRACK_DIR) && mkdir(USYSCONF_TRACK_DIR, 00755) != 0) {
+                fprintf(stderr, "mkdir(): %s %s\n", USYSCONF_TRACK_DIR, strerror(errno));
+                return false;
+        }
 
         fp = fopen(self->state_file, "w");
         if (!fp) {

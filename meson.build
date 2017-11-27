@@ -85,6 +85,11 @@ with_kernel_dir = get_option('with-kernel-dir')
 cdata.set_quoted('KERNEL_MODULES_DIR', with_kernel_modules_dir)
 cdata.set_quoted('KERNEL_DIR', with_kernel_dir)
 
+# Tracking files
+cdata.set_quoted('USYSCONF_TRACK_DIR', path_vardir)
+with_status_file = join_paths(path_vardir, 'status')
+cdata.set_quoted('USYSCONF_STATUS_FILE', with_status_file)
+
 # Write config.h now
 config_h = configure_file(
      configuration: cdata,
@@ -113,6 +118,8 @@ report = [
     '    sysconfdir:                             @0@'.format(path_sysconfdir),
     '    sbindir:                                @0@'.format(path_sbindir),
     '    static binary:                          @0@'.format(with_static_binary),
+    '    tracking directory:                     @0@'.format(path_vardir),
+    '    status file:                            @0@'.format(with_status_file),
     '',
     '    Extra modules:',
     '    ==============',
