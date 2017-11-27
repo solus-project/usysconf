@@ -63,9 +63,20 @@ with_ldm = get_option('with-linux-driver-management')
 if with_ldm == true
     cdata.set('HAVE_LDM', '1')
 endif
+
+# Work out systemd support
 with_systemd = get_option('with-systemd')
 if with_systemd == true
     cdata.set('HAVE_SYSTEMD', '1')
+
+    message('Asking pkg-config for systemd\'s directories')
+    dep_systemd = dependency('systemd')
+    systemd_unit_dir = dep_systemd.get_pkgconfig_variable('systemdsystemunitdir')
+    systemd_tmpfiles_dir = dep_systemd.get_pkgconfig_variable('tmpfilesdir')
+    systemd_sysusers_dir = dep_systemd.get_pkgconfig_variable('sysusersdir')
+    cdata.set_quoted('SYSTEMD_UNIT_DIR', systemd_unit_dir)
+    cdata.set_quoted('SYSTEMD_TMPFILES_DIR', systemd_tmpfiles_dir)
+    cdata.set_quoted('SYSTEMD_SYSUSERS_DIR', systemd_sysusers_dir)
 endif
 
 with_kernel_modules_dir = get_option('with-kernel-modules-dir')
@@ -115,6 +126,18 @@ report = [
     '    modules directory:                      @0@'.format(with_kernel_dir),
     '    kernel directory:                       @0@'.format(with_kernel_modules_dir),
 ]
+
+if with_systemd == true
+report += [
+    '',
+    '    systemd configuration:',
+    '    ======================',
+    '',
+    '    systemd unit directory:                 @0@'.format(systemd_unit_dir),
+    '    systemd tmpfiles directory:             @0@'.format(systemd_tmpfiles_dir),
+    '    systemd sysusers directory:             @0@'.format(systemd_sysusers_dir),
+]
+endif
 
 # Output some stuff to validate the build config
 message('\n\n\n' + '\n'.join(report) + '\n\n')

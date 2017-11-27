@@ -16,13 +16,13 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "config.h"
 #include "context.h"
 #include "files.h"
 #include "util.h"
 
 static const char *sysuser_paths[] = {
-        "/usr/lib/sysusers.d",
-        /* /etc/sysusers.d */
+        SYSTEMD_SYSUSERS_DIR,
 };
 
 /**

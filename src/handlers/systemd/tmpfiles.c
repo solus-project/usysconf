@@ -16,13 +16,13 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "config.h"
 #include "context.h"
 #include "files.h"
 #include "util.h"
 
 static const char *sysuser_paths[] = {
-        "/usr/lib/tmpfiles.d",
-        /* /etc/tmpfiles.d */
+        SYSTEMD_TMPFILES_DIR,
 };
 
 /**

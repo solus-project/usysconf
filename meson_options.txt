@@ -3,6 +3,7 @@ option('with-static-binary', type: 'boolean', value: 'false', description: 'Buil
 # Control what modules usysconf knows about
 option('with-linux-driver-management', type: 'boolean', value: 'true', description: 'Enable linux-driver-management support')
 option('with-clr-boot-manager', type: 'boolean', value: 'true', description: 'Enable clr-boot-manager support')
+
 option('with-systemd', type: 'boolean', value: 'true', description: 'Enable systemd support')
 
 # Used for boot management bits (like depmod)

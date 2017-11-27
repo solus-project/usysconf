@@ -16,12 +16,13 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "config.h"
 #include "context.h"
 #include "files.h"
 #include "util.h"
 
 static const char *unit_paths[] = {
-        "/usr/lib/systemd/system",
+        SYSTEMD_UNIT_DIR,
 };
 
 /**
