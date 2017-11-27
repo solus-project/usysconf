@@ -53,7 +53,7 @@ Checkmark means work is unblocked for this item.
  - [x] hicolor-icon-theme
  - [x] comar (irony, yes. it just runs an unneeded script)
  - [x] cups (just switch to sysusers/tmpfiles)
- - [ ] kernel-glue
+ - [x] kernel-glue
  - [ ] baselayout
  - [x] dcron (consider killing with fire, convert to sysusers/tmpfile)
  - [x] gconf
