@@ -35,30 +35,29 @@ tool, enabling users to apply triggers and bring their system back up to full he
 
 #### Affected packages in Solus
 
-**linux-driver-management hook:**
+Checkmark means work is unblocked for this item.
 
  - [x] nvidia-glx-driver
  - [x] nvidia-304-glx-driver
  - [x] nvidia-340-glx-driver
  - [x] mesalib
- - [x] xorg-server
- 
- - [ ] openssh
+ - [x] xorg-server 
+ - [x] openssh (must also be converted to sysusers/tmpfiles)
+ - [x] fontconfig
+ - [x] ca-certs (will expand to use `trust` in future)
+ - [x] gtk2
+ - [x] gtk3
+ - [x] glib2
+ - [x] desktop-file-utils
+ - [x] hicolor-icon-theme
+ - [x] comar (irony, yes. it just runs an unneeded script)
+ - [x] cups (just switch to sysusers/tmpfiles)
  - [ ] kernel-glue
- - [ ] fontconfig
- - [ ] ca-certs
- - [ ] comar
  - [ ] baselayout
- - [ ] gtk2
- - [ ] gtk3
- - [ ] desktop-file-utils
- - [ ] pisi
- - [ ] dcron
+ - [ ] dcron (consider killing with fire)
  - [ ] gconf
- - [ ] glib2
- - [ ] mlocate
- - [ ] hicolor-icon-theme
- - [ ] cups
+ - [ ] mlocate (not sure how much we actually care about this.)
+ - [ ] pisi (currently unkillable until we build muxer)
 
 
 ## Authors
