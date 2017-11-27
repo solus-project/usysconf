@@ -10,15 +10,18 @@ xdg_handlers = [
 
 handlers = [
     'ldconfig',
-    'depmod',
     'hwdb',
     'mandb',
     'ssl',
     'openssh',
 ]
 
+kernel_handlers = [
+    'depmod',
+]
+
 if with_cbm == true
-    handlers += 'clr-boot-manager'
+    kernel_handlers += 'clr-boot-manager'
 endif
 
 if with_ldm == true
@@ -48,6 +51,11 @@ endforeach
 # Stick all the xdg guys in
 foreach xdg_handler : xdg_handlers
     libusysconf_sources += 'handlers/xdg/@0@.c'.format(xdg_handler)
+endforeach
+
+# Stick all the kernel guys in
+foreach kernel_handler : kernel_handlers
+    libusysconf_sources += 'handlers/kernel/@0@.c'.format(kernel_handler)
 endforeach
 
 usysconf_link_args = []
