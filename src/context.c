@@ -201,12 +201,6 @@ bool usc_context_run_triggers(UscContext *context, const char *name)
                 fputs("Invalid state has been removed\n", stderr);
         }
 
-        if (usc_context_has_flag(context, USC_FLAGS_CHROOTED)) {
-                fputs("Chrooted!\n", stdout);
-        } else {
-                fputs("Not chrooted\n", stdout);
-        }
-
         /* Just test the main loop iteration jank for now */
         for (size_t i = 0; i < ARRAY_SIZE(usc_handlers); i++) {
                 if (name && strcmp(usc_handlers[i]->name, name) != 0) {
