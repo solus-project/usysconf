@@ -65,9 +65,9 @@ config_h_dir = include_directories('.')
 # Get libuf built to provide convenience functions
 libuf = subproject('libuf',
     default_options: [
-        'default-library=static',
         'c_std=c11',
         'with-tests=false',
+        'with-static=true',
     ]
 )
 
