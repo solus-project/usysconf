@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "config.h"
 #include "context.h"
 #include "files.h"
 #include "util.h"
@@ -34,9 +35,15 @@ static const char *font_paths[] = {
 static UscHandlerStatus usc_handler_hwdb_exec(__usc_unused__ UscContext *ctx, const char *path)
 {
         const char *command[] = {
+#ifdef HAVE_SYSTEMD
                 "/usr/bin/systemd-hwdb",
                 "update", /* Update hwdb cache */
-                NULL,     /* Terminator */
+#else
+                "/usr/bin/udevadm",
+                "hwdb",
+                "--update", /* Legacy invocation */
+#endif
+                NULL, /* Terminator */
         };
 
         if (!usc_file_is_dir(path)) {

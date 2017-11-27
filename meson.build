@@ -55,6 +55,13 @@ cdata.set_quoted('PACKAGE_URL', 'https://solus-project.com')
 # actually valgrind the thing.
 with_static_binary = get_option('with-static-binary')
 
+with_cbm = get_option('with-clr-boot-manager')
+with_ldm = get_option('with-linux-driver-management')
+with_systemd = get_option('with-systemd')
+if with_systemd == true
+    cdata.set('HAVE_SYSTEMD', '1')
+endif
+
 # Write config.h now
 config_h = configure_file(
      configuration: cdata,
@@ -70,9 +77,6 @@ libuf = subproject('libuf',
         'with-static=true',
     ]
 )
-
-with_cbm = get_option('with-clr-boot-manager')
-with_ldm = get_option('with-linux-driver-management')
 
 # Now go build the source
 subdir('src')
@@ -92,6 +96,7 @@ report = [
     '',
     '    clr-boot-manager:                       @0@'.format(with_cbm),
     '    linux-driver-management:                @0@'.format(with_ldm),
+    '    systemd support:                        @0@'.format(with_systemd),
 ]
 
 # Output some stuff to validate the build config

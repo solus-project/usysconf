@@ -2,8 +2,6 @@ handlers = [
     'ldconfig',
     'depmod',
     'hwdb',
-    'sysusers',
-    'tmpfiles',
     'mime',
     'glib2',
     'icon-cache',
@@ -24,6 +22,14 @@ endif
 
 if with_ldm == true
     handlers += 'linux-driver-management'
+endif
+
+# We'll still enable hwdb but alter for udev path if not using systemd
+if with_systemd == true
+    handlers += [
+        'tmpfiles',
+        'sysusers',
+    ]
 endif
 
 libusysconf_sources = [
