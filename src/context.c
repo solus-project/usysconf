@@ -38,16 +38,16 @@ static const UscHandler *usc_handlers[] = {
         &usc_handler_ldconfig, /**<Get library cache in order first */
 
 #ifdef HAVE_CBM
-        &usc_handler_cbm,      /**<Now CBM can successfully run */
+        &usc_handler_cbm, /**<Now CBM can successfully run */
 #endif
 
-        &usc_handler_depmod,   /**< Run depmod after cbm does its thing */
+        &usc_handler_depmod, /**< Run depmod after cbm does its thing */
 
         /** Middleware */
         &usc_handler_hwdb, /**<Want hwdb updated before calling LDM (PCI) */
 
 #ifdef HAVE_LDM
-        &usc_handler_ldm,  /**<Update drivers/GL-links/etc */
+        &usc_handler_ldm, /**<Update drivers/GL-links/etc */
 #endif
 
         /* Very likely that LDM caused a cache invalidation for lib dirs */
