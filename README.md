@@ -32,6 +32,7 @@ tool, enabling users to apply triggers and bring their system back up to full he
  - [x] Enforce linking against `musl` for tiny binaries. (glibc is huge..)
  - [x] Drop `prefix` notion and restrict to direct host usage (or chroot)
  - [ ] Make sure the following list is fully accounted for by usysconf
+ - [ ] Don't run a hook if prerequisites aren't found
 
 #### Affected packages in Solus
 
