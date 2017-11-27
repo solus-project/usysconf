@@ -10,6 +10,7 @@ project(
         'prefix=/usr',
         'sysconfdir=/etc',
         'localstatedir=/var',
+        'default-library=static',
     ],
 )
 
