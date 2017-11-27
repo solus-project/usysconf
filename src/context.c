@@ -57,6 +57,7 @@ static const UscHandler *usc_handlers[] = {
         &usc_handler_sysusers,
         &usc_handler_tmpfiles,
         &usc_handler_systemd_reload,
+        &usc_handler_systemd_reexec,
 #endif
 
         /** Enter userspace. */

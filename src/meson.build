@@ -33,6 +33,7 @@ if with_systemd == true
     handlers += [
         'systemd/tmpfiles',
         'systemd/sysusers',
+        'systemd/reexec',
         'systemd/reload',
     ]
 endif

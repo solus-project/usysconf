@@ -73,9 +73,11 @@ if with_systemd == true
     systemd_unit_dir = dep_systemd.get_pkgconfig_variable('systemdsystemunitdir')
     systemd_tmpfiles_dir = dep_systemd.get_pkgconfig_variable('tmpfilesdir')
     systemd_sysusers_dir = dep_systemd.get_pkgconfig_variable('sysusersdir')
+    systemd_util_dir = dep_systemd.get_pkgconfig_variable('systemdutildir')
     cdata.set_quoted('SYSTEMD_UNIT_DIR', systemd_unit_dir)
     cdata.set_quoted('SYSTEMD_TMPFILES_DIR', systemd_tmpfiles_dir)
     cdata.set_quoted('SYSTEMD_SYSUSERS_DIR', systemd_sysusers_dir)
+    cdata.set_quoted('SYSTEMD_UTIL_DIR', systemd_util_dir)
 endif
 
 with_kernel_modules_dir = get_option('with-kernel-modules-dir')
@@ -135,6 +137,7 @@ report += [
     '    systemd unit directory:                 @0@'.format(systemd_unit_dir),
     '    systemd tmpfiles directory:             @0@'.format(systemd_tmpfiles_dir),
     '    systemd sysusers directory:             @0@'.format(systemd_sysusers_dir),
+    '    systemd binary directory:               @0@'.format(systemd_util_dir),
 ]
 endif
 
