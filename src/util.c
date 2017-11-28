@@ -28,7 +28,6 @@
 /**
  * Ensure that /dev/null is actually a character device and exists,
  * so that we don't try to redirect stdout to the disk.
- */
 static bool dev_null_not_cranky(void)
 {
         struct stat st = { 0 };
@@ -39,7 +38,7 @@ static bool dev_null_not_cranky(void)
                 return false;
         }
         return true;
-}
+}*/
 
 /**
  * Redirect the file descriptor to the named file
@@ -54,11 +53,10 @@ static void redirect_fileno_named(int file_no, const char *file, int mode)
 
 /**
  * Redirect the file descriptor to /dev/null
- */
 static void redirect_fileno_devnull(int file_no)
 {
         redirect_fileno_named(file_no, "/dev/null", O_WRONLY);
-}
+}*/
 
 int usc_exec_command(char **command)
 {
@@ -71,13 +69,9 @@ int usc_exec_command(char **command)
                 fprintf(stderr, "Failed to fork(): %s\n", strerror(errno));
                 return -1;
         } else if (p == 0) {
-                /* Redirect /dev/null if it isn't cranky */
-                if (dev_null_not_cranky()) {
-                        redirect_fileno_devnull(STDOUT_FILENO);
-                }
-
-                /* Ensure we create the new guy now */
-                redirect_fileno_named(STDERR_FILENO, USYSCONF_LOG_FILE, O_WRONLY | O_CREAT);
+                /* Force all output to a temporary log file */
+                redirect_fileno_named(STDOUT_FILENO, USYSCONF_LOG_FILE, O_WRONLY | O_CREAT | O_APPEND);
+                redirect_fileno_named(STDERR_FILENO, USYSCONF_LOG_FILE, O_WRONLY | O_CREAT | O_APPEND);
 
                 /* Execute the command */
                 if ((r = execv(command[0], command)) != 0) {
