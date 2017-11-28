@@ -37,6 +37,7 @@ add_global_arguments(am_cflags, language: 'c')
 # Get configuration bits together
 path_prefix = get_option('prefix')
 path_sysconfdir = join_paths(path_prefix, get_option('sysconfdir'))
+path_mandir = join_paths(path_prefix, get_option('mandir'))
 path_datadir = join_paths(path_prefix, get_option('datadir'))
 path_sbindir = join_paths(path_prefix, get_option('sbindir'))
 path_vardir = join_paths(path_prefix, get_option('localstatedir'), 'lib', meson.project_name())
@@ -122,6 +123,9 @@ libuf = subproject('libuf',
     ]
 )
 
+# Install manpage
+subdir('man')
+
 # Now go build the source
 subdir('src')
 
@@ -132,6 +136,7 @@ report = [
     '    prefix:                                 @0@'.format(path_prefix),
     '    datadir:                                @0@'.format(path_datadir),
     '    sysconfdir:                             @0@'.format(path_sysconfdir),
+    '    mandir:                                 @0@'.format(path_mandir),
     '    sbindir:                                @0@'.format(path_sbindir),
     '    static binary:                          @0@'.format(with_static_binary),
     '    tracking directory:                     @0@'.format(path_vardir),
