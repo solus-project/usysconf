@@ -228,7 +228,8 @@ static void usc_nuke_rewind_log(void)
         }
 }
 
-static void usc_handle_one(const UscHandler *handler, UscContext *context, UscStateTracker *tracker)
+static void usc_handle_one(const UscHandler *handler, UscContext *context, UscStateTracker *tracker,
+                           bool force_run)
 {
         UscHandlerStatus status = USC_HANDLER_MIN;
         bool record_remain = false;
@@ -253,7 +254,7 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
                         }
 
                         /* Do we need to handle this dude ? */
-                        if (!usc_state_tracker_needs_update(tracker, resolved)) {
+                        if (!usc_state_tracker_needs_update(tracker, resolved, force_run)) {
                                 continue;
                         }
 
@@ -316,7 +317,7 @@ static void usc_context_sync(UscContext *self)
         usc_context_emit_task_finish(self, USC_HANDLER_SUCCESS);
 }
 
-bool usc_context_run_triggers(UscContext *context, const char *name)
+bool usc_context_run_triggers(UscContext *context, const char *name, bool force_run)
 {
         autofree(UscStateTracker) *tracker = NULL;
         bool ran_trigger = false;
@@ -357,7 +358,7 @@ loops:
                         usc_context_sync(context);
                         did_sync = true;
                 }
-                usc_handle_one(usc_handlers[i], context, tracker);
+                usc_handle_one(usc_handlers[i], context, tracker, force_run);
                 ran_trigger = true;
         }
         if (list) {

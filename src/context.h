@@ -102,10 +102,11 @@ bool usc_context_has_flag(UscContext *context, unsigned int flag);
  *
  * @param context Pointer to an allocated context
  * @param name Either the name of the trigger, or NULL for all triggers
+ * @param force_run Force the trigger to run again
  *
  * @returns True if the operation succeeded
  */
-bool usc_context_run_triggers(UscContext *context, const char *name);
+bool usc_context_run_triggers(UscContext *context, const char *name, bool force_run);
 
 /**
  * Handlers are free to use this method as they see fit, with the primary

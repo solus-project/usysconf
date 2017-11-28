@@ -44,10 +44,11 @@ bool usc_state_tracker_push_path(UscStateTracker *tracker, const char *path);
  *
  * @param tracker Pointer to an allocated UscStateTracker
  * @param path Path to query (will be resolved)
+ * @param force If the path exists but has no mtime update, force it to update
  *
  * @returns True if the path needs updating
  */
-bool usc_state_tracker_needs_update(UscStateTracker *tracker, const char *path);
+bool usc_state_tracker_needs_update(UscStateTracker *tracker, const char *path, bool force);
 
 /**
  * Attempt to load the existing state from disk

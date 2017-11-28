@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "cli.h"
@@ -20,6 +21,16 @@ int usc_cli_run_triggers(int argc, char **argv)
 {
         autofree(UscContext) *context = NULL;
         const char *trigger = NULL;
+        bool force_run = false;
+
+        fprintf(stderr, "argv is %d\n", argc);
+
+        for (int i = 0; i < argc; i++) {
+                if (strcmp(argv[i], "-f") == 0) {
+                        force_run = true;
+                        break;
+                }
+        }
 
         if (geteuid() != 0) {
                 fprintf(stderr, "You must be root to run triggers\n");
@@ -33,13 +44,17 @@ int usc_cli_run_triggers(int argc, char **argv)
         }
 
         /* No args, run all triggers */
-        if (argc == 0) {
-                return usc_context_run_triggers(context, trigger) ? EXIT_SUCCESS : EXIT_FAILURE;
+        if (argc == 0 || (argc == 1 && force_run)) {
+                return usc_context_run_triggers(context, trigger, force_run) ? EXIT_SUCCESS
+                                                                             : EXIT_FAILURE;
         }
 
         /* Run all specified triggers by name */
-        for (int i = 0; i < argc; i++) {
-                if (!usc_context_run_triggers(context, argv[i])) {
+        for (int i = optind; i < argc; i++) {
+                if (strcmp(argv[i], "-f") == 0) {
+                        continue;
+                }
+                if (!usc_context_run_triggers(context, argv[i], force_run)) {
                         return EXIT_FAILURE;
                 }
         }

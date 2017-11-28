@@ -282,7 +282,7 @@ bool usc_state_tracker_load(UscStateTracker *self)
         return true;
 }
 
-bool usc_state_tracker_needs_update(UscStateTracker *self, const char *path)
+bool usc_state_tracker_needs_update(UscStateTracker *self, const char *path, bool force)
 {
         time_t mtime = 0;
         UscStateEntry *entry = NULL;
@@ -301,6 +301,10 @@ bool usc_state_tracker_needs_update(UscStateTracker *self, const char *path)
 
         /* Some fs bork, do it anyway */
         if (!usc_file_mtime(real, &mtime)) {
+                return true;
+        }
+
+        if (force) {
                 return true;
         }
 
