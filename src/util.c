@@ -70,8 +70,12 @@ int usc_exec_command(char **command)
                 return -1;
         } else if (p == 0) {
                 /* Force all output to a temporary log file */
-                redirect_fileno_named(STDOUT_FILENO, USYSCONF_LOG_FILE, O_WRONLY | O_CREAT | O_APPEND);
-                redirect_fileno_named(STDERR_FILENO, USYSCONF_LOG_FILE, O_WRONLY | O_CREAT | O_APPEND);
+                redirect_fileno_named(STDOUT_FILENO,
+                                      USYSCONF_REWIND_LOG_FILE,
+                                      O_WRONLY | O_CREAT | O_APPEND);
+                redirect_fileno_named(STDERR_FILENO,
+                                      USYSCONF_REWIND_LOG_FILE,
+                                      O_WRONLY | O_CREAT | O_APPEND);
 
                 /* Execute the command */
                 if ((r = execv(command[0], command)) != 0) {

@@ -95,9 +95,9 @@ with_status_file = join_paths(path_vardir, 'status')
 cdata.set_quoted('USYSCONF_STATUS_FILE', with_status_file)
 
 with_log_dir = get_option('with-log-dir')
-with_log_file = join_paths(with_log_dir, '@0@.log'.format(meson.project_name()))
+with_rewind_log_file = join_paths(with_log_dir, '@0@.rewind.log'.format(meson.project_name()))
 cdata.set_quoted('USYSCONF_LOG_DIR', with_log_dir)
-cdata.set_quoted('USYSCONF_LOG_FILE', with_log_file)
+cdata.set_quoted('USYSCONF_REWIND_LOG_FILE', with_rewind_log_file)
 
 # Write config.h now
 config_h = configure_file(
@@ -129,7 +129,7 @@ report = [
     '    static binary:                          @0@'.format(with_static_binary),
     '    tracking directory:                     @0@'.format(path_vardir),
     '    status file:                            @0@'.format(with_status_file),
-    '    log file:                               @0@'.format(with_log_file),
+    '    rewind log file:                        @0@'.format(with_rewind_log_file),
     '',
     '    Extra modules:',
     '    ==============',

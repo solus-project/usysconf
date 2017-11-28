@@ -151,11 +151,11 @@ static void usc_spit_fail_log(void)
         ssize_t written;
         ssize_t total;
 
-        fd = open(USYSCONF_LOG_FILE, O_RDONLY);
+        fd = open(USYSCONF_REWIND_LOG_FILE, O_RDONLY);
         if (fd < 0) {
                 fprintf(stderr,
                         "open(%s): failed to open log file: %s\n",
-                        USYSCONF_LOG_FILE,
+                        USYSCONF_REWIND_LOG_FILE,
                         strerror(errno));
                 return;
         }
@@ -172,6 +172,17 @@ static void usc_spit_fail_log(void)
                         return;
                 }
                 total -= written;
+        }
+}
+
+static void usc_nuke_rewind_log(void)
+{
+        /* Nuke old playback log here */
+        if (usc_file_exists(USYSCONF_REWIND_LOG_FILE) && unlink(USYSCONF_REWIND_LOG_FILE) != 0) {
+                fprintf(stderr,
+                        "unlink(%s): Cannot remove old log file: %s\n",
+                        USYSCONF_REWIND_LOG_FILE,
+                        strerror(errno));
         }
 }
 
@@ -204,6 +215,7 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
                                 continue;
                         }
 
+                        usc_nuke_rewind_log();
                         status = handler->exec(context, resolved);
 
                         if ((status & USC_HANDLER_SUCCESS) == USC_HANDLER_SUCCESS) {
@@ -239,6 +251,7 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
                 }
                 globfree(&glo);
         }
+        usc_nuke_rewind_log();
 }
 
 bool usc_context_run_triggers(UscContext *context, const char *name)
