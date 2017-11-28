@@ -55,10 +55,9 @@ static const UscHandler *usc_handlers[] = {
 
 #ifdef HAVE_LDM
         &usc_handler_ldm, /**<Update drivers/GL-links/etc */
-#endif
-
         /* Very likely that LDM caused a cache invalidation for lib dirs */
         &usc_handler_ldconfig,
+#endif
 
 #ifdef HAVE_SYSTEMD
         &usc_handler_sysusers,
