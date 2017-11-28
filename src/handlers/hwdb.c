@@ -32,7 +32,7 @@ static const char *font_paths[] = {
  * This generates the .bin cache file from the hwdb.d directories
  * and effectively compiles to a single cache
  */
-static UscHandlerStatus usc_handler_hwdb_exec(__usc_unused__ UscContext *ctx, const char *path)
+static UscHandlerStatus usc_handler_hwdb_exec(UscContext *ctx, const char *path)
 {
         const char *command[] = {
 #ifdef HAVE_SYSTEMD
@@ -50,12 +50,13 @@ static UscHandlerStatus usc_handler_hwdb_exec(__usc_unused__ UscContext *ctx, co
                 return USC_HANDLER_SKIP;
         }
 
-        fprintf(stderr, "Compiling hwdb for %s\n", path);
+        usc_context_emit_task_start(ctx, "Updating hwdb");
         int ret = usc_exec_command((char **)command);
         if (ret != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
         /* Only want to run once for all of our globs */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 }

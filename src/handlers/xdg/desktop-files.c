@@ -30,8 +30,7 @@ static const char *font_paths[] = {
  * This simply runs when /usr/share/applications is modified, building the
  * new "mimeinfo.cache" file. Note this is anti-statelesss.
  */
-static UscHandlerStatus usc_handler_desktop_files_exec(__usc_unused__ UscContext *ctx,
-                                                       const char *path)
+static UscHandlerStatus usc_handler_desktop_files_exec(UscContext *ctx, const char *path)
 {
         char *command[] = {
                 "/usr/bin/update-desktop-database",
@@ -46,12 +45,13 @@ static UscHandlerStatus usc_handler_desktop_files_exec(__usc_unused__ UscContext
 
         command[2] = (char *)path;
 
-        fprintf(stderr, "Updating desktop database for %s\n", path);
+        usc_context_emit_task_start(ctx, "Updating desktop database");
         int ret = usc_exec_command((char **)command);
         if (ret != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
         /* Only want to run once for all of our globs */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 }

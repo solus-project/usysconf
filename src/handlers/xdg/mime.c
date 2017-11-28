@@ -35,7 +35,7 @@ static const char *font_paths[] = {
  * This is OK however as we pass -n which will bypass unnecessary updates
  * to the cache.
  */
-static UscHandlerStatus usc_handler_mime_exec(__usc_unused__ UscContext *ctx, const char *path)
+static UscHandlerStatus usc_handler_mime_exec(UscContext *ctx, const char *path)
 {
         char *command[] = {
                 "/usr/bin/update-mime-database",
@@ -51,12 +51,13 @@ static UscHandlerStatus usc_handler_mime_exec(__usc_unused__ UscContext *ctx, co
         /* Locked for now due to only using our own root */
         command[2] = "/usr/share/mime";
 
-        fprintf(stderr, "Updating mime database for %s\n", path);
+        usc_context_emit_task_start(ctx, "Updating mimetype database");
         int ret = usc_exec_command((char **)command);
         if (ret != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
         /* Only want to run once for all of our globs */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 }

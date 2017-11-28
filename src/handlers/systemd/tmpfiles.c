@@ -31,7 +31,7 @@ static const char *sysuser_paths[] = {
  * If an update delivers changes to /usr/lib/tmpfiles.d, tell
  * systemd-tmpfiles to go do something with that.
  */
-static UscHandlerStatus usc_handler_tmpfiles_exec(__usc_unused__ UscContext *ctx, const char *path)
+static UscHandlerStatus usc_handler_tmpfiles_exec(UscContext *ctx, const char *path)
 {
         const char *command[] = {
                 "/usr/bin/systemd-tmpfiles",
@@ -44,12 +44,13 @@ static UscHandlerStatus usc_handler_tmpfiles_exec(__usc_unused__ UscContext *ctx
                 return USC_HANDLER_SKIP;
         }
 
-        fprintf(stderr, "Updating tmpfiles for %s\n", path);
+        usc_context_emit_task_start(ctx, "Updating systemd tmpfiles");
         int ret = usc_exec_command((char **)command);
         if (ret != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
         /* Only want to run once for all of our globs */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 }

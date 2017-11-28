@@ -39,17 +39,19 @@ static UscHandlerStatus usc_handler_systemd_reexec_exec(UscContext *ctx, const c
                 return USC_HANDLER_SKIP;
         }
 
+        usc_context_emit_task_start(ctx, "Re-executing systemd");
+
         if (usc_context_has_flag(ctx, USC_FLAGS_CHROOTED)) {
-                fputs("Skipping reexec due to chroot environment\n", stderr);
+                usc_context_emit_task_finish(ctx, USC_HANDLER_SKIP);
                 return USC_HANDLER_SKIP | USC_HANDLER_BREAK;
         }
 
-        fprintf(stderr, "Re-executing systemd due to change on: %s\n", path);
         int ret = usc_exec_command((char **)command);
         if (ret != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
         /* Only want to run once for all of our globs */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 }

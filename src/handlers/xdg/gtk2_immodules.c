@@ -41,11 +41,13 @@ static UscHandlerStatus usc_handler_gtk2_immodules_exec(__usc_unused__ UscContex
         }
 
         fprintf(stderr, "Updating GTK2 input modules for %s\n", path);
+        usc_context_emit_task_start(ctx, "Updating GTK2 input module cache");
         int ret = usc_exec_command(command);
         if (ret != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
         /* Only want to run once for all of our globs */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 }

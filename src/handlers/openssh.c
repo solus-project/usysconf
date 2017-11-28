@@ -31,7 +31,7 @@ static const char *sshd_paths[] = {
 /**
  * Handle correct bootstrap of sshd
  */
-static UscHandlerStatus usc_handler_sshd_exec(__usc_unused__ UscContext *ctx, const char *path)
+static UscHandlerStatus usc_handler_sshd_exec(UscContext *ctx, const char *path)
 {
         const char *command[] = {
                 "/usr/bin/ssh-keygen",
@@ -57,12 +57,13 @@ static UscHandlerStatus usc_handler_sshd_exec(__usc_unused__ UscContext *ctx, co
                 return USC_HANDLER_SKIP | USC_HANDLER_BREAK;
         }
 
-        fprintf(stderr, "Creating hostkey for sshd %s\n", path);
+        usc_context_emit_task_start(ctx, "Creating OpenSSH host key");
         int ret = usc_exec_command((char **)command);
         if (ret != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
         /* Only want to run once for all of our globs */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 }

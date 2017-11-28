@@ -28,7 +28,7 @@ static const char *library_paths[] = {
 /**
  * Update the linker cache (`/sbin/ldconfig`) when library directories update
  */
-static UscHandlerStatus usc_handler_ldconfig_exec(__usc_unused__ UscContext *ctx, const char *path)
+static UscHandlerStatus usc_handler_ldconfig_exec(UscContext *ctx, const char *path)
 {
         char *command[] = {
                 "/sbin/ldconfig",
@@ -40,12 +40,13 @@ static UscHandlerStatus usc_handler_ldconfig_exec(__usc_unused__ UscContext *ctx
                 return USC_HANDLER_SKIP;
         }
 
-        fprintf(stderr, "Checking %s\n", path);
+        usc_context_emit_task_start(ctx, "Updating dynamic library cache");
         int ret = usc_exec_command(command);
         if (ret != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
         /* Only want to run once for all of our globs */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 }

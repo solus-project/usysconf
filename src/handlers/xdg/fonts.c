@@ -32,7 +32,7 @@ static const char *font_paths[] = {
  * tracked has disappeared so we can rebuild the whole cache, then we'll
  * be able to do per directory fc-cache updates to make updates quicker.
  */
-static UscHandlerStatus usc_handler_fonts_exec(__usc_unused__ UscContext *ctx, const char *path)
+static UscHandlerStatus usc_handler_fonts_exec(UscContext *ctx, const char *path)
 {
         /* TODO: Maybe try again with '-r' if this fails */
         const char *command[] = {
@@ -46,12 +46,13 @@ static UscHandlerStatus usc_handler_fonts_exec(__usc_unused__ UscContext *ctx, c
                 return USC_HANDLER_SKIP;
         }
 
-        fprintf(stderr, "Compiling fonts for %s\n", path);
+        usc_context_emit_task_start(ctx, "Rebuilding font cache");
         int ret = usc_exec_command((char **)command);
         if (ret != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
         /* Only want to run once for all of our globs */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 }

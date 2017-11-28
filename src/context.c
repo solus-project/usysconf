@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <glob.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -95,6 +96,9 @@ struct UscContext {
         unsigned int flags; /**<A bitwise set of flags specified for the context */
 
         UfHashmap *skip_map; /**<Allow implementations to track skips */
+
+        char *task_string; /**<Current task string */
+        int task_print_offset;
 };
 
 UscContext *usc_context_new()
@@ -125,6 +129,10 @@ void usc_context_free(UscContext *self)
 {
         if (!self) {
                 return;
+        }
+        if (self->task_string) {
+                free(self->task_string);
+                self->task_string = NULL;
         }
         uf_hashmap_free(self->skip_map);
         free(self);
@@ -317,6 +325,72 @@ bool usc_context_should_skip(UscContext *self, char *skip_item)
         }
         /* Only 0==NULL on glibc, 1 will be set and thus not NULL */
         return uf_hashmap_get(self->skip_map, skip_item) != NULL;
+}
+
+void usc_context_emit_task_start(UscContext *self, const char *fmt, ...)
+{
+        va_list va;
+        va_start(va, fmt);
+        int local_offset = 5 + strlen("running");
+        // static bool have_tty = isatty(STDOUT_FILENO);
+
+        if (self->task_string) {
+                free(self->task_string);
+                self->task_string = NULL;
+        }
+
+        self->task_print_offset = vasprintf(&self->task_string, fmt, va);
+        if (self->task_print_offset < 0) {
+                fputs("OOM\n", stderr);
+                abort();
+        }
+
+        /* TODO: Make pretty */
+        fprintf(stdout,
+                "  ⌛ %s%*srunning",
+                self->task_string,
+                79 - self->task_print_offset - local_offset,
+                " ");
+        fflush(stdout);
+
+        va_end(va);
+}
+
+/**
+ * Let the user know that the task finished
+ *
+ * @param context Pointer to an allocated UscContext instance
+ * @param success True if we're registering success, otherwise it's a failure.
+ */
+void usc_context_emit_task_finish(UscContext *self, UscHandlerStatus status)
+{
+        static const char *labels[] = {
+                [USC_HANDLER_SUCCESS] = "success",
+                [USC_HANDLER_FAIL] = "failed",
+                [USC_HANDLER_SKIP] = "skipped",
+        };
+        static const char *status_marks[] = {
+                [USC_HANDLER_SUCCESS] = "✓",
+                [USC_HANDLER_FAIL] = "✕",
+                [USC_HANDLER_SKIP] = "⏩",
+        };
+        int local_offset = 5;
+
+        /* Just make sure the old string really gets wiped */
+        for (size_t i = 0; i < strlen("running"); i++) {
+                fputc('\b', stdout);
+        }
+
+        local_offset += (int)strlen(labels[status]);
+
+        /* Rewind the string and update the current status */
+        fprintf(stdout,
+                "\r [%s] %s%*s%s\n",
+                status_marks[status],
+                self->task_string,
+                79 - self->task_print_offset - local_offset,
+                " ",
+                labels[status]);
 }
 
 /*

@@ -27,7 +27,7 @@ static const char *dconf_paths[] = { "/etc/dconf/db/*",
 /**
  * Update dconf database
  */
-static UscHandlerStatus usc_handler_dconf_exec(__usc_unused__ UscContext *ctx, const char *path)
+static UscHandlerStatus usc_handler_dconf_exec(UscContext *ctx, const char *path)
 {
         char *command[] = {
                 "/usr/bin/dconf",
@@ -39,12 +39,13 @@ static UscHandlerStatus usc_handler_dconf_exec(__usc_unused__ UscContext *ctx, c
                 return USC_HANDLER_SKIP;
         }
 
-        fprintf(stderr, "Updating dconf database for %s\n", path);
+        usc_context_emit_task_start(ctx, "Rebuilding dconf database");
         int ret = usc_exec_command(command);
         if (ret != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
         /* Only want to run once for all of our globs */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 }

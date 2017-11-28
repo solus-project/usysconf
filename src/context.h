@@ -122,6 +122,23 @@ bool usc_context_run_triggers(UscContext *context, const char *name);
 bool usc_context_push_skip(UscContext *context, char *skip_item);
 
 /**
+ * Emit task start status to the terminal
+ *
+ * @param context Pointer to an allocated UscContext instance
+ * @param fmt printf formatted string
+ */
+void usc_context_emit_task_start(UscContext *context, const char *fmt, ...)
+    __attribute__((format(printf, 2, 3)));
+
+/**
+ * Let the user know that the task finished
+ *
+ * @param context Pointer to an allocated UscContext instance
+ * @param status One of SUCCESS, SKIP or FAILURE.
+ */
+void usc_context_emit_task_finish(UscContext *context, UscHandlerStatus status);
+
+/**
  * If an item is registered with usc_context_push_skip, this function
  * will return true if the path matches.
  *

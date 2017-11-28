@@ -70,12 +70,13 @@ static UscHandlerStatus usc_handler_depmod_exec(UscContext *ctx, const char *pat
                 return USC_HANDLER_FAIL;
         }
 
-        fprintf(stderr, "Running depmod on %s\n", kernel_nom);
+        usc_context_emit_task_start(ctx, "Running depmod on kernel %s", kernel_nom);
         int ret = usc_exec_command(command);
         if (ret != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
 
         /* Need to run for all of our globs */
         return USC_HANDLER_SUCCESS;

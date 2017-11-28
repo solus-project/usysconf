@@ -34,7 +34,7 @@ static const char *boot_paths[] = {
  * Trigger `clr-boot-manager update` when one of the boot-relevant components
  * has been altered within the upstream delivery mechanism.
  */
-static UscHandlerStatus usc_handler_cbm_exec(__usc_unused__ UscContext *ctx, const char *path)
+static UscHandlerStatus usc_handler_cbm_exec(UscContext *ctx, const char *path)
 {
         char *command[] = {
                 "/usr/bin/clr-boot-manager", "update", NULL, /* Terminator */
@@ -45,11 +45,13 @@ static UscHandlerStatus usc_handler_cbm_exec(__usc_unused__ UscContext *ctx, con
                 return USC_HANDLER_SKIP;
         }
 
+        usc_context_emit_task_start(ctx, "Updating clr-boot-manager");
         int ret = usc_exec_command(command);
         if (ret != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
         /* Only want to run once for all of our globs */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 }

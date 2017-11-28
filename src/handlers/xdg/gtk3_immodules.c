@@ -27,8 +27,7 @@ static const char *module_paths[] = {
 /**
  * Update immodules cache for GTK3
  */
-static UscHandlerStatus usc_handler_gtk3_immodules_exec(__usc_unused__ UscContext *ctx,
-                                                        const char *path)
+static UscHandlerStatus usc_handler_gtk3_immodules_exec(UscContext *ctx, const char *path)
 {
         char *command[] = {
                 "/usr/bin/gtk-query-immodules-3.0",
@@ -40,12 +39,13 @@ static UscHandlerStatus usc_handler_gtk3_immodules_exec(__usc_unused__ UscContex
                 return USC_HANDLER_SKIP;
         }
 
-        fprintf(stderr, "Updating GTK3 input modules for %s\n", path);
+        usc_context_emit_task_start(ctx, "Updating GTK3 input module cache");
         int ret = usc_exec_command(command);
         if (ret != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
         /* Only want to run once for all of our globs */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 }

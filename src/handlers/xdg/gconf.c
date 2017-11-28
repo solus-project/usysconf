@@ -67,7 +67,7 @@ static int rm_dir_kids(const char *dir)
 /**
  * Rebuild the gconf2 merged database
  */
-static UscHandlerStatus usc_handler_gconf_exec_internal(const char *path)
+static UscHandlerStatus usc_handler_gconf_exec_internal(UscContext *ctx, const char *path)
 {
         glob_t schemas = { 0 };
         autofree(char) *schema_glob = NULL;
@@ -93,15 +93,15 @@ static UscHandlerStatus usc_handler_gconf_exec_internal(const char *path)
         schemas.gl_pathv[0] = "/usr/bin/gconftool-2";
         schemas.gl_pathv[1] = "--makefile-install-rule";
 
-        fprintf(stderr, "Updating gconf schemas for %s\n", path);
-
         setenv("GCONF_CONFIG_SOURCE", MERGE_PTR, 1);
+        usc_context_emit_task_start(ctx, "Registering gconf schemas in: %s", path);
         int r = usc_exec_command(schemas.gl_pathv);
         if (r != 0) {
-                fprintf(stderr, "Ohnoes\n");
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 ret = USC_HANDLER_FAIL | USC_HANDLER_BREAK;
         }
         unsetenv("GCONF_CONFIG_SOURCE");
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
 
         ret = USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
 
@@ -120,9 +120,16 @@ static UscHandlerStatus usc_handler_gconf_exec(UscContext *ctx, const char *path
 
         /* Even if we re-enter, ensure we only nuke the first time. */
         if (!usc_context_should_skip(ctx, GCONF_PRIMARY_TREE)) {
-                if (usc_file_is_dir(GCONF_PRIMARY_TREE) && rm_dir_kids(GCONF_PRIMARY_TREE) < 0) {
-                        fprintf(stderr, "Failed to wipe stale tree: %s\n", strerror(errno));
-                        return USC_HANDLER_FAIL;
+                if (usc_file_is_dir(GCONF_PRIMARY_TREE)) {
+                        usc_context_emit_task_start(ctx, "Removing old gconf tree");
+                        if (rm_dir_kids(GCONF_PRIMARY_TREE) < 0) {
+                                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
+                                fprintf(stderr,
+                                        "Cannot remove stale gconf tree: %s\n",
+                                        strerror(errno));
+                                return USC_HANDLER_FAIL;
+                        }
+                        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
                 }
 
                 if (!usc_context_push_skip(ctx, GCONF_PRIMARY_TREE)) {
@@ -131,14 +138,19 @@ static UscHandlerStatus usc_handler_gconf_exec(UscContext *ctx, const char *path
                 }
         }
 
-        if (!usc_file_exists(GCONF_PRIMARY_TREE) && mkdir(GCONF_PRIMARY_TREE, 00755) != 0) {
-                fprintf(stderr, "Cannot construct gconf dir: %s\n", strerror(errno));
-                return USC_HANDLER_FAIL;
+        if (!usc_file_exists(GCONF_PRIMARY_TREE)) {
+                usc_context_emit_task_start(ctx, "Preparing gconf tree");
+                if (mkdir(GCONF_PRIMARY_TREE, 00755) != 0) {
+                        usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
+                        fprintf(stderr, "Cannot construct gconf dir: %s\n", strerror(errno));
+                        return USC_HANDLER_FAIL;
+                }
+                usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
         }
 
         /* Make sure we update all the trees now */
         for (size_t i = 0; i < ARRAY_SIZE(gconf_paths); i++) {
-                UscHandlerStatus lret = usc_handler_gconf_exec_internal(gconf_paths[i]);
+                UscHandlerStatus lret = usc_handler_gconf_exec_internal(ctx, gconf_paths[i]);
                 if ((lret & USC_HANDLER_FAIL) == USC_HANDLER_FAIL) {
                         ret = lret;
                         break;
