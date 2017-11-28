@@ -24,8 +24,8 @@
  * Paths that trigger an LDM update
  */
 static const char *driver_paths[] = {
-        "/usr/lib/glx-provider/*",
-        "/usr/lib32/glx-provider/*",
+        "/usr/lib/glx-provider",
+        "/usr/lib32/glx-provider",
 };
 
 /**
