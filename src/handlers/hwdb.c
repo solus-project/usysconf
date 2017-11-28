@@ -64,6 +64,11 @@ static UscHandlerStatus usc_handler_hwdb_exec(UscContext *ctx, const char *path)
 const UscHandler usc_handler_hwdb = {
         .name = "hwdb",
         .description = "Update hardware database",
+#ifdef HAVE_SYSTEMD
+        .required_bin = "/usr/bin/systemd-hwdb",
+#else
+        .required_bin = "/usr/bin/udevadm",
+#endif
         .exec = usc_handler_hwdb_exec,
         .paths = font_paths,
         .n_paths = ARRAY_SIZE(font_paths),

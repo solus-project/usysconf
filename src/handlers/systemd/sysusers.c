@@ -57,6 +57,7 @@ static UscHandlerStatus usc_handler_sysusers_exec(UscContext *ctx, const char *p
 const UscHandler usc_handler_sysusers = {
         .name = "sysusers",
         .description = "Update systemd sysusers",
+        .required_bin = "/usr/bin/systemd-sysusers",
         .exec = usc_handler_sysusers_exec,
         .paths = sysuser_paths,
         .n_paths = ARRAY_SIZE(sysuser_paths),

@@ -59,6 +59,7 @@ static UscHandlerStatus usc_handler_systemd_reexec_exec(UscContext *ctx, const c
 const UscHandler usc_handler_systemd_reexec = {
         .name = "systemd-reexec",
         .description = "Re-execute systemd",
+        .required_bin = "/usr/bin/systemctl",
         .exec = usc_handler_systemd_reexec_exec,
         .paths = unit_paths,
         .n_paths = ARRAY_SIZE(unit_paths),

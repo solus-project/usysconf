@@ -31,7 +31,7 @@ static UscHandlerStatus usc_handler_gtk2_immodules_exec(__usc_unused__ UscContex
                                                         const char *path)
 {
         char *command[] = {
-                "/usr/bin/gtk-query-immodules-3.0",
+                "/usr/bin/gtk-query-immodules-2.0",
                 "--update-cache", /* Update cache directly */
                 NULL,             /* Terminator */
         };
@@ -54,6 +54,7 @@ static UscHandlerStatus usc_handler_gtk2_immodules_exec(__usc_unused__ UscContex
 const UscHandler usc_handler_gtk2_immodules = {
         .name = "gtk2-immodules",
         .description = "Update GTK2 input module cache",
+        .required_bin = "/usr/bin/gtk-query-immodules-3.0",
         .exec = usc_handler_gtk2_immodules_exec,
         .paths = module_paths,
         .n_paths = ARRAY_SIZE(module_paths),

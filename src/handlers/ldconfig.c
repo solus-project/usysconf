@@ -54,6 +54,7 @@ static UscHandlerStatus usc_handler_ldconfig_exec(UscContext *ctx, const char *p
 const UscHandler usc_handler_ldconfig = {
         .name = "ldconfig",
         .description = "Update dynamic library cache",
+        .required_bin = "/sbin/ldconfig",
         .exec = usc_handler_ldconfig_exec,
         .paths = library_paths,
         .n_paths = ARRAY_SIZE(library_paths),

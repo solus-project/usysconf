@@ -65,6 +65,7 @@ static UscHandlerStatus usc_handler_mime_exec(UscContext *ctx, const char *path)
 const UscHandler usc_handler_mime = {
         .name = "mime",
         .description = "Update mimetype database",
+        .required_bin = "/usr/bin/update-mime-database",
         .exec = usc_handler_mime_exec,
         .paths = font_paths,
         .n_paths = ARRAY_SIZE(font_paths),

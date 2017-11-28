@@ -56,6 +56,7 @@ static UscHandlerStatus usc_handler_glib2_exec(__usc_unused__ UscContext *ctx, c
 const UscHandler usc_handler_glib2 = {
         .name = "glib2",
         .description = "Compile glib-schemas",
+        .required_bin = "/usr/bin/glib-compile-schemas",
         .exec = usc_handler_glib2_exec,
         .paths = schema_paths,
         .n_paths = ARRAY_SIZE(schema_paths),

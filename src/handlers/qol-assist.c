@@ -63,6 +63,7 @@ static UscHandlerStatus usc_handler_qol_assist_exec(UscContext *ctx, const char 
 const UscHandler usc_handler_qol_assist = {
         .name = "qol-assist",
         .description = "Register QoL migration",
+        .required_bin = "/usr/sbin/qol-assist",
         .exec = usc_handler_qol_assist_exec,
         .paths = qol_paths,
         .n_paths = ARRAY_SIZE(qol_paths),

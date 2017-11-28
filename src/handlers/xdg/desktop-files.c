@@ -59,6 +59,7 @@ static UscHandlerStatus usc_handler_desktop_files_exec(UscContext *ctx, const ch
 const UscHandler usc_handler_desktop_files = {
         .name = "desktop-files",
         .description = "Update desktop database",
+        .required_bin = "/usr/bin/update-desktop-database",
         .exec = usc_handler_desktop_files_exec,
         .paths = font_paths,
         .n_paths = ARRAY_SIZE(font_paths),

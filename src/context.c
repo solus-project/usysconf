@@ -234,6 +234,16 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
         UscHandlerStatus status = USC_HANDLER_MIN;
         bool record_remain = false;
 
+        /* Make sure the binary is actually present */
+        if (handler->required_bin && access(handler->required_bin, X_OK) != 0) {
+                usc_context_emit_task_start(context,
+                                            "skipping: %s (%s not found)",
+                                            handler->name,
+                                            handler->required_bin);
+                usc_context_emit_task_finish(context, USC_HANDLER_SKIP);
+                return;
+        }
+
         for (size_t i = 0; i < handler->n_paths; i++) {
                 glob_t glo = { 0 };
                 const char *path = NULL;

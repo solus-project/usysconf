@@ -54,6 +54,7 @@ static UscHandlerStatus usc_handler_mandb_exec(UscContext *ctx, const char *path
 const UscHandler usc_handler_mandb = {
         .name = "mandb",
         .description = "Updating manpages database",
+        .required_bin = "/usr/bin/mandb",
         .exec = usc_handler_mandb_exec,
         .paths = manpage_paths,
         .n_paths = ARRAY_SIZE(manpage_paths),

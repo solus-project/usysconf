@@ -60,6 +60,7 @@ static UscHandlerStatus usc_handler_systemd_reload_exec(UscContext *ctx, const c
 const UscHandler usc_handler_systemd_reload = {
         .name = "systemd-reload",
         .description = "Reload systemd configuration",
+        .required_bin = "/usr/bin/systemctl",
         .exec = usc_handler_systemd_reload_exec,
         .paths = unit_paths,
         .n_paths = ARRAY_SIZE(unit_paths),

@@ -58,6 +58,7 @@ static UscHandlerStatus usc_handler_tmpfiles_exec(UscContext *ctx, const char *p
 const UscHandler usc_handler_tmpfiles = {
         .name = "tmpfiles",
         .description = "Update systemd tmpfiles",
+        .required_bin = "/usr/bin/systemd-tmpfiles",
         .exec = usc_handler_tmpfiles_exec,
         .paths = sysuser_paths,
         .n_paths = ARRAY_SIZE(sysuser_paths),
