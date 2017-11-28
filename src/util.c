@@ -97,10 +97,6 @@ int usc_exec_command(char **command)
 
         /* At this point just make sure the return code was 0 */
         ret = WEXITSTATUS(status);
-        if (ret != 0) {
-                fprintf(stderr, "'%s' failed with exit code %d\n", command[0], r);
-        }
-
         return ret;
 }
 

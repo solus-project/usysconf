@@ -18,7 +18,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/sendfile.h>
 #include <sys/stat.h>
 
 #include "config.h"
@@ -116,9 +115,33 @@ UscContext *usc_context_new()
         if (usc_is_chrooted()) {
                 ret->flags |= USC_FLAGS_CHROOTED;
         }
-        ret->have_tty = isatty(STDOUT_FILENO);
-        /* TODO: Open a log here */
-        ret->logfh = stdout;
+        ret->have_tty = isatty(STDOUT_FILENO) ? true : false;
+
+        /* Ensure we have logging */
+        if (!ret->have_tty) {
+                /* Before we go, make sure log directory exists */
+                if (!usc_file_exists(USYSCONF_LOG_DIR) && mkdir(USYSCONF_LOG_DIR, 00755) != 0) {
+                        fprintf(stderr,
+                                "Cannot construct log directory %s: %s\n",
+                                USYSCONF_LOG_DIR,
+                                strerror(errno));
+                        usc_context_free(ret);
+                        return NULL;
+                }
+                /* We only want to write a fresh log for the current run. Failing items will
+                 * keep failing until fixed, such as clr-boot-manager */
+                ret->logfh = fopen(USYSCONF_LOG_FILE, "w");
+                if (!ret->logfh) {
+                        fprintf(stderr,
+                                "Cannot open log file %s: %s\n",
+                                USYSCONF_LOG_FILE,
+                                strerror(errno));
+                        usc_context_free(ret);
+                        return NULL;
+                }
+        } else {
+                ret->logfh = stdout;
+        }
 
         /* Skip map only contains a 1 value */
         ret->skip_map =
@@ -136,9 +159,11 @@ void usc_context_free(UscContext *self)
         if (!self) {
                 return;
         }
+        if (!self->have_tty && self->logfh) {
+                fclose(self->logfh);
+        }
         if (self->task_string) {
                 free(self->task_string);
-                self->task_string = NULL;
         }
         uf_hashmap_free(self->skip_map);
         free(self);
@@ -158,12 +183,12 @@ bool usc_context_has_flag(UscContext *self, unsigned int flag)
 /**
  * An item failed, so wind back our log and spit it back out to the tty
  */
-static void usc_spit_fail_log(void)
+static void usc_spit_fail_log(UscContext *self)
 {
-        struct stat st = { 0 };
+        ssize_t nr;
+        char buf[4096];
+        FILE *dst = NULL;
         int fd = -1;
-        ssize_t written;
-        ssize_t total;
 
         fd = open(USYSCONF_REWIND_LOG_FILE, O_RDONLY);
         if (fd < 0) {
@@ -173,20 +198,16 @@ static void usc_spit_fail_log(void)
                         strerror(errno));
                 return;
         }
-        fstat(fd, &st);
 
-        /* Pump entire file to stderr */
-        total = st.st_size;
-        for (;;) {
-                written = sendfile(STDERR_FILENO, fd, NULL, (size_t)total);
-                if (written == total) {
-                        break;
-                } else if (written < 0) {
-                        fprintf(stderr, "sendfile(): %s\n", strerror(errno));
+        dst = self->have_tty ? stderr : self->logfh;
+        fputs("\nA copy of the command output follows:\n\n", dst);
+        while ((nr = read(fd, buf, sizeof(buf))) > 0) {
+                if (fwrite(buf, (size_t)nr, 1, dst) != 1) {
+                        fprintf(stderr, "fwrite(): %s\n", strerror(errno));
                         return;
                 }
-                total -= written;
         }
+        fputs("\n\n", dst);
 }
 
 static void usc_nuke_rewind_log(void)
@@ -236,8 +257,14 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
                                 record_path = true;
                         }
                         if ((status & USC_HANDLER_FAIL) == USC_HANDLER_FAIL) {
-                                fputs("Failed\n", stderr);
-                                usc_spit_fail_log();
+                                if (!context->have_tty) {
+                                        fprintf(stderr,
+                                                "Failed handler '%s', please consult the log file: "
+                                                "%s\n",
+                                                handler->name,
+                                                USYSCONF_LOG_FILE);
+                                }
+                                usc_spit_fail_log(context);
                                 continue;
                         }
                         if ((status & USC_HANDLER_SKIP) == USC_HANDLER_SKIP) {
@@ -297,15 +324,6 @@ bool usc_context_run_triggers(UscContext *context, const char *name)
         /* Crack on regardless. */
         if (!usc_state_tracker_load(tracker)) {
                 fputs("Invalid state has been removed\n", stderr);
-        }
-
-        /* Before we go, make sure log directory exists */
-        if (!usc_file_exists(USYSCONF_LOG_DIR) && mkdir(USYSCONF_LOG_DIR, 00755) != 0) {
-                fprintf(stderr,
-                        "Cannot construct log directory %s: %s\n",
-                        USYSCONF_LOG_DIR,
-                        strerror(errno));
-                return false;
         }
 
         /* Just test the main loop iteration jank for now */
@@ -381,7 +399,7 @@ void usc_context_emit_task_start(UscContext *self, const char *fmt, ...)
         }
 
         if (self->have_tty) {
-                fprintf(stdout,
+                fprintf(self->logfh,
                         "  ⌛ %s%*s%srunning%s",
                         self->task_string,
                         79 - self->task_print_offset - local_offset,
@@ -389,14 +407,10 @@ void usc_context_emit_task_start(UscContext *self, const char *fmt, ...)
                         embold,
                         col_reset);
         } else {
-                fprintf(stdout,
-                        "  ⌛ %s%*srunning",
-                        self->task_string,
-                        79 - self->task_print_offset - local_offset,
-                        " ");
+                fprintf(self->logfh, "Run Task: %s", self->task_string);
         }
 
-        fflush(stdout);
+        fflush(self->logfh);
 
         va_end(va);
 }
@@ -436,7 +450,7 @@ void usc_context_emit_task_finish(UscContext *self, UscHandlerStatus status)
 
         /* Rewind the string and update the current status */
         if (self->have_tty) {
-                fprintf(stdout,
+                fprintf(self->logfh,
                         "\r [%s%s%s] %s%*s%s%s%s\n",
                         colors[status],
                         status_marks[status],
@@ -448,13 +462,12 @@ void usc_context_emit_task_finish(UscContext *self, UscHandlerStatus status)
                         labels[status],
                         col_reset);
         } else {
-                fprintf(stdout,
-                        "\r [%s] %s%*s%s\n",
-                        status_marks[status],
-                        self->task_string,
+                fprintf(self->logfh,
+                        "%*s%s\n",
                         79 - self->task_print_offset - local_offset,
                         " ",
                         labels[status]);
+                fflush(self->logfh);
         }
 }
 
