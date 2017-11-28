@@ -102,6 +102,8 @@ struct UscContext {
 
         char *task_string; /**<Current task string */
         int task_print_offset;
+
+        bool failed; /**Only marked once */
 };
 
 UscContext *usc_context_new()
@@ -117,6 +119,7 @@ UscContext *usc_context_new()
                 ret->flags |= USC_FLAGS_CHROOTED;
         }
         ret->have_tty = isatty(STDOUT_FILENO) ? true : false;
+        ret->failed = false;
 
         /* Useful for build environments to forcibly bypass isatty detection */
         if (getenv("USYSCONF_LOG_STDOUT")) {
@@ -275,6 +278,7 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
                                 record_path = true;
                         }
                         if ((status & USC_HANDLER_FAIL) == USC_HANDLER_FAIL) {
+                                context->failed = true;
                                 if (!context->have_tty) {
                                         fprintf(stderr,
                                                 "Failed handler '%s', please consult the log file: "
@@ -424,7 +428,7 @@ bool usc_context_run_triggers(UscContext *context, const char *name, bool force_
                 return false;
         }
 
-        return true;
+        return !context->failed;
 }
 
 bool usc_context_push_skip(UscContext *self, char *skip_item)
