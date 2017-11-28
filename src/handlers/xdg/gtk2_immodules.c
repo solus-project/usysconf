@@ -40,7 +40,6 @@ static UscHandlerStatus usc_handler_gtk2_immodules_exec(__usc_unused__ UscContex
                 return USC_HANDLER_SKIP;
         }
 
-        fprintf(stderr, "Updating GTK2 input modules for %s\n", path);
         usc_context_emit_task_start(ctx, "Updating GTK2 input module cache");
         int ret = usc_exec_command(command);
         if (ret != 0) {
