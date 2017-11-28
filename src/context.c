@@ -332,7 +332,9 @@ void usc_context_emit_task_start(UscContext *self, const char *fmt, ...)
         va_list va;
         va_start(va, fmt);
         int local_offset = 5 + strlen("running");
-        // static bool have_tty = isatty(STDOUT_FILENO);
+        bool use_color = isatty(STDOUT_FILENO);
+        static const char *col_reset = "\x1b[0m";
+        static const char *embold = "\x1b[1;37m";
 
         if (self->task_string) {
                 free(self->task_string);
@@ -345,12 +347,22 @@ void usc_context_emit_task_start(UscContext *self, const char *fmt, ...)
                 abort();
         }
 
-        /* TODO: Make pretty */
-        fprintf(stdout,
-                "  ⌛ %s%*srunning",
-                self->task_string,
-                79 - self->task_print_offset - local_offset,
-                " ");
+        if (use_color) {
+                fprintf(stdout,
+                        "  ⌛ %s%*s%srunning%s",
+                        self->task_string,
+                        79 - self->task_print_offset - local_offset,
+                        " ",
+                        embold,
+                        col_reset);
+        } else {
+                fprintf(stdout,
+                        "  ⌛ %s%*srunning",
+                        self->task_string,
+                        79 - self->task_print_offset - local_offset,
+                        " ");
+        }
+
         fflush(stdout);
 
         va_end(va);
@@ -371,9 +383,16 @@ void usc_context_emit_task_finish(UscContext *self, UscHandlerStatus status)
         };
         static const char *status_marks[] = {
                 [USC_HANDLER_SUCCESS] = "✓",
-                [USC_HANDLER_FAIL] = "✕",
-                [USC_HANDLER_SKIP] = "⏩",
+                [USC_HANDLER_FAIL] = "✗",
+                [USC_HANDLER_SKIP] = " ",
         };
+        static const char *colors[] = {
+                [USC_HANDLER_SUCCESS] = "\x1b[0;36m",
+                [USC_HANDLER_FAIL] = "\x1b[1;31m",
+                [USC_HANDLER_SKIP] = "\x1b[1;37m",
+        };
+        bool use_color = isatty(STDOUT_FILENO);
+        static const char *col_reset = "\x1b[0m";
         int local_offset = 5;
 
         /* Just make sure the old string really gets wiped */
@@ -384,13 +403,27 @@ void usc_context_emit_task_finish(UscContext *self, UscHandlerStatus status)
         local_offset += (int)strlen(labels[status]);
 
         /* Rewind the string and update the current status */
-        fprintf(stdout,
-                "\r [%s] %s%*s%s\n",
-                status_marks[status],
-                self->task_string,
-                79 - self->task_print_offset - local_offset,
-                " ",
-                labels[status]);
+        if (use_color) {
+                fprintf(stdout,
+                        "\r [%s%s%s] %s%*s%s%s%s\n",
+                        colors[status],
+                        status_marks[status],
+                        col_reset,
+                        self->task_string,
+                        79 - self->task_print_offset - local_offset,
+                        " ",
+                        colors[status],
+                        labels[status],
+                        col_reset);
+        } else {
+                fprintf(stdout,
+                        "\r [%s] %s%*s%s\n",
+                        status_marks[status],
+                        self->task_string,
+                        79 - self->task_print_offset - local_offset,
+                        " ",
+                        labels[status]);
+        }
 }
 
 /*
