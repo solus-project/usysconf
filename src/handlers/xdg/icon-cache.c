@@ -122,7 +122,7 @@ static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char 
 
         /* Is this a stray icon theme dir? */
         if (is_orphan_icon_dir(theme_dir)) {
-                usc_context_emit_task_start(ctx, "Removing orphaned icon theme: %s", theme_dir);
+                usc_context_emit_task_start(ctx, "Removing empty icon directory: %s", theme_dir);
                 if (rmdir_and(theme_dir, "icon-theme.cache") != 0) {
                         usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                         usc_context_printf(ctx,
