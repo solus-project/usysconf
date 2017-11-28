@@ -82,6 +82,9 @@ if with_systemd == true
     cdata.set_quoted('SYSTEMD_TMPFILES_DIR', systemd_tmpfiles_dir)
     cdata.set_quoted('SYSTEMD_SYSUSERS_DIR', systemd_sysusers_dir)
     cdata.set_quoted('SYSTEMD_UTIL_DIR', systemd_util_dir)
+
+    with_systemd_reexec = get_option('with-systemd-reexec')
+    cdata.set_quoted('HAVE_SYSTEMD_REEXEC', '1')
 endif
 
 with_kernel_modules_dir = get_option('with-kernel-modules-dir')
@@ -159,6 +162,7 @@ report += [
     '    systemd tmpfiles directory:             @0@'.format(systemd_tmpfiles_dir),
     '    systemd sysusers directory:             @0@'.format(systemd_sysusers_dir),
     '    systemd binary directory:               @0@'.format(systemd_util_dir),
+    '    allow systemd reexec:                   @0@'.format(with_systemd_reexec),
 ]
 endif
 

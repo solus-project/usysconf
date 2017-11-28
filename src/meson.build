@@ -39,9 +39,11 @@ if with_systemd == true
     handlers += [
         'systemd/tmpfiles',
         'systemd/sysusers',
-        'systemd/reexec',
         'systemd/reload',
     ]
+    if with_systemd_reexec == true
+        handlers += 'systemd/reexec'
+    endif
 endif
 
 libusysconf_sources = [

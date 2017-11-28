@@ -6,6 +6,7 @@ option('with-clr-boot-manager', type: 'boolean', value: 'true', description: 'En
 option('with-qol-assist', type: 'boolean', value: 'true', description: 'Enable qol-assist support')
 
 option('with-systemd', type: 'boolean', value: 'true', description: 'Enable systemd support')
+option('with-systemd-reexec', type: 'boolean', value: 'true', description: 'Enable systemd re-exec support')
 
 # Used for boot management bits (like depmod)
 option('with-kernel-modules-dir', type: 'string', value: '/lib/modules', description: 'Path to the kernel module base tree')

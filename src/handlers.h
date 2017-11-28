@@ -37,7 +37,9 @@ extern UscHandler usc_handler_ldm;
 extern UscHandler usc_handler_sysusers;
 extern UscHandler usc_handler_tmpfiles;
 extern UscHandler usc_handler_systemd_reload;
+#ifdef HAVE_SYSTEMD_REEXEC
 extern UscHandler usc_handler_systemd_reexec;
+#endif
 #endif
 
 extern UscHandler usc_handler_glib2;
