@@ -118,6 +118,12 @@ UscContext *usc_context_new()
         }
         ret->have_tty = isatty(STDOUT_FILENO) ? true : false;
 
+        /* Useful for build environments to forcibly bypass isatty detection */
+        if (getenv("USYSCONF_LOG_STDOUT")) {
+                ret->have_tty = true;
+                ret->logfh = stdout;
+        }
+
         /* Ensure we have logging */
         if (!ret->have_tty) {
                 /* Before we go, make sure log directory exists */
