@@ -40,7 +40,7 @@ static UscHandlerStatus usc_handler_mandb_exec(UscContext *ctx, const char *path
                 return USC_HANDLER_SKIP;
         }
 
-        usc_context_emit_task_start(ctx, "Updating mandb");
+        usc_context_emit_task_start(ctx, "Updating manpages database");
         int ret = usc_exec_command(command);
         if (ret != 0) {
                 usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
@@ -53,6 +53,7 @@ static UscHandlerStatus usc_handler_mandb_exec(UscContext *ctx, const char *path
 
 const UscHandler usc_handler_mandb = {
         .name = "mandb",
+        .description = "Updating manpages database",
         .exec = usc_handler_mandb_exec,
         .paths = manpage_paths,
         .n_paths = ARRAY_SIZE(manpage_paths),

@@ -165,6 +165,7 @@ static UscHandlerStatus usc_handler_gconf_exec(UscContext *ctx, const char *path
 
 const UscHandler usc_handler_gconf = {
         .name = "gconf",
+        .description = "Update GConf schemas",
         .exec = usc_handler_gconf_exec,
         .paths = gconf_paths,
         .n_paths = ARRAY_SIZE(gconf_paths),

@@ -39,7 +39,7 @@ static UscHandlerStatus usc_handler_systemd_reload_exec(UscContext *ctx, const c
                 return USC_HANDLER_SKIP;
         }
 
-        usc_context_emit_task_start(ctx, "Reloading system configuration");
+        usc_context_emit_task_start(ctx, "Reloading systemd configuration");
         if (usc_context_has_flag(ctx, USC_FLAGS_CHROOTED)) {
                 usc_context_emit_task_finish(ctx, USC_HANDLER_SKIP);
                 return USC_HANDLER_SKIP | USC_HANDLER_BREAK;
@@ -59,6 +59,7 @@ static UscHandlerStatus usc_handler_systemd_reload_exec(UscContext *ctx, const c
 
 const UscHandler usc_handler_systemd_reload = {
         .name = "systemd_reload",
+        .description = "Reload systemd configuration",
         .exec = usc_handler_systemd_reload_exec,
         .paths = unit_paths,
         .n_paths = ARRAY_SIZE(unit_paths),

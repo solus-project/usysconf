@@ -59,6 +59,7 @@ static UscHandlerStatus usc_handler_fonts_exec(UscContext *ctx, const char *path
 
 const UscHandler usc_handler_fonts = {
         .name = "fonts",
+        .description = "Rebuild font cache",
         .exec = usc_handler_fonts_exec,
         .paths = font_paths,
         .n_paths = ARRAY_SIZE(font_paths),

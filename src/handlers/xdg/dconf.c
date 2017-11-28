@@ -52,6 +52,7 @@ static UscHandlerStatus usc_handler_dconf_exec(UscContext *ctx, const char *path
 
 const UscHandler usc_handler_dconf = {
         .name = "dconf",
+        .description = "Update dconf database",
         .exec = usc_handler_dconf_exec,
         .paths = dconf_paths,
         .n_paths = ARRAY_SIZE(dconf_paths),

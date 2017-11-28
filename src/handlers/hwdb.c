@@ -63,6 +63,7 @@ static UscHandlerStatus usc_handler_hwdb_exec(UscContext *ctx, const char *path)
 
 const UscHandler usc_handler_hwdb = {
         .name = "hwdb",
+        .description = "Update hardware database",
         .exec = usc_handler_hwdb_exec,
         .paths = font_paths,
         .n_paths = ARRAY_SIZE(font_paths),

@@ -61,10 +61,11 @@ typedef UscHandlerStatus (*usc_context_func)(UscContext *context, const char *pa
  * off the ground.
  */
 typedef struct UscHandler {
-        const char **paths;    /**<Path we register interest for */
-        const char *name;      /**<Name for this handler */
-        usc_context_func exec; /**<Execution handler */
-        size_t n_paths;        /**< Number of known paths */
+        const char **paths;      /**<Path we register interest for */
+        const char *name;        /**<Name for this handler */
+        const char *description; /**<Nice description for humans */
+        usc_context_func exec;   /**<Execution handler */
+        size_t n_paths;          /**< Number of known paths */
 } UscHandler;
 
 /**

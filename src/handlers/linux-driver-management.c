@@ -67,6 +67,7 @@ static UscHandlerStatus usc_handler_ldm_exec(UscContext *ctx, const char *path)
 
 const UscHandler usc_handler_ldm = {
         .name = "linux-driver-management",
+        .description = "Update graphical driver configuration",
         .exec = usc_handler_ldm_exec,
         .paths = driver_paths,
         .n_paths = ARRAY_SIZE(driver_paths),

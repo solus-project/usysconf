@@ -55,6 +55,7 @@ static UscHandlerStatus usc_handler_ssl_certs_exec(__usc_unused__ UscContext *ct
 
 const UscHandler usc_handler_ssl_certs = {
         .name = "ssl-certs",
+        .description = "Update SSL certificate configuration",
         .exec = usc_handler_ssl_certs_exec,
         .paths = cert_paths,
         .n_paths = ARRAY_SIZE(cert_paths),

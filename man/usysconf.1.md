@@ -24,6 +24,9 @@ actions to configure components such as kernels or the dynamic linker cache.
     When called without any arguments, all system triggers will be executed.
     Alternatively, you may provide a list of triggers to run directly.
 
+    The special value "list" will cause all known triggers to be listed
+    instead of executing them.
+
 `help`
 
     Print the supported command set for the `usysconf(1)` binary.

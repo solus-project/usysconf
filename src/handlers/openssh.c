@@ -70,6 +70,7 @@ static UscHandlerStatus usc_handler_sshd_exec(UscContext *ctx, const char *path)
 
 const UscHandler usc_handler_sshd = {
         .name = "openssh",
+        .description = "Create OpenSSH host key",
         .exec = usc_handler_sshd_exec,
         .paths = sshd_paths,
         .n_paths = ARRAY_SIZE(sshd_paths),

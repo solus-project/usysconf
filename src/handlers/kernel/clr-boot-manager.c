@@ -58,6 +58,7 @@ static UscHandlerStatus usc_handler_cbm_exec(UscContext *ctx, const char *path)
 
 const UscHandler usc_handler_cbm = {
         .name = "clr-boot-manager",
+        .description = "Update boot configuration + kernels",
         .exec = usc_handler_cbm_exec,
         .paths = boot_paths,
         .n_paths = ARRAY_SIZE(boot_paths),

@@ -84,6 +84,7 @@ static UscHandlerStatus usc_handler_depmod_exec(UscContext *ctx, const char *pat
 
 const UscHandler usc_handler_depmod = {
         .name = "depmod",
+        .description = "Run depmod for each kernel",
         .exec = usc_handler_depmod_exec,
         .paths = module_paths,
         .n_paths = ARRAY_SIZE(module_paths),
