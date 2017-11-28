@@ -152,7 +152,7 @@ static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char 
 }
 
 const UscHandler usc_handler_icon_cache = {
-        .name = "icon caches",
+        .name = "icon-caches",
         .description = "Update icon theme caches",
         .exec = usc_handler_icon_cache_exec,
         .paths = icon_cache_paths,
