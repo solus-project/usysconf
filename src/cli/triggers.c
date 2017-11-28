@@ -23,10 +23,8 @@ int usc_cli_run_triggers(int argc, char **argv)
         const char *trigger = NULL;
         bool force_run = false;
 
-        fprintf(stderr, "argv is %d\n", argc);
-
         for (int i = 0; i < argc; i++) {
-                if (strcmp(argv[i], "-f") == 0) {
+                if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--force") == 0) {
                         force_run = true;
                         break;
                 }
@@ -51,7 +49,7 @@ int usc_cli_run_triggers(int argc, char **argv)
 
         /* Run all specified triggers by name */
         for (int i = optind; i < argc; i++) {
-                if (strcmp(argv[i], "-f") == 0) {
+                if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--force") == 0) {
                         continue;
                 }
                 if (!usc_context_run_triggers(context, argv[i], force_run)) {

@@ -17,6 +17,16 @@ tasks within a well defined centralised location.
 health, detecting changes within the filesystem and taking any appropriate
 actions to configure components such as kernels or the dynamic linker cache.
 
+## OPTIONS
+
+The following options are applicable to `usysconf(1)`.
+
+
+ * `-f`, `--force`
+
+   Force a trigger to run, even if the local file doesn't seem to have been
+   updated.
+   
 ## SUBCOMMANDS
 
 `run [triggers]`

@@ -15,6 +15,17 @@
 .P
 \fBusysconf\fR will run a variety of triggers to ensure system consistency and health, detecting changes within the filesystem and taking any appropriate actions to configure components such as kernels or the dynamic linker cache\.
 .
+.SH "OPTIONS"
+The following options are applicable to \fBusysconf(1)\fR\.
+.
+.IP "\(bu" 4
+\fB\-f\fR, \fB\-\-force\fR
+.
+.IP
+Force a trigger to run, even if the local file doesn\'t seem to have been updated\.
+.
+.IP "" 0
+.
 .SH "SUBCOMMANDS"
 \fBrun [triggers]\fR
 .
