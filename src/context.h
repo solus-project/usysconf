@@ -95,6 +95,11 @@ void usc_context_free(UscContext *context);
 bool usc_context_has_flag(UscContext *context, unsigned int flag);
 
 /**
+ * Utility function, print known triggers to the terminal
+ */
+void usc_context_list_triggers(void);
+
+/**
  * Run triggers within this context
  *
  * If @name is NULL, then we will run all given triggers. Otherwise, we will

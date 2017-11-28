@@ -22,12 +22,23 @@ int usc_cli_run_triggers(int argc, char **argv)
         autofree(UscContext) *context = NULL;
         const char *trigger = NULL;
         bool force_run = false;
+        bool list = false;
 
         for (int i = 0; i < argc; i++) {
                 if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--force") == 0) {
                         force_run = true;
                         break;
                 }
+                if (strcmp(argv[i], "list") == 0) {
+                        list = true;
+                        break;
+                }
+        }
+
+        /* Don't require euid 0 to list triggers. */
+        if (list) {
+                usc_context_list_triggers();
+                return EXIT_SUCCESS;
         }
 
         if (geteuid() != 0) {

@@ -317,18 +317,24 @@ static void usc_context_sync(UscContext *self)
         usc_context_emit_task_finish(self, USC_HANDLER_SUCCESS);
 }
 
+void usc_context_list_triggers(void)
+{
+        fputs("Currently known triggers:\n\n", stdout);
+
+        for (size_t i = 0; i < ARRAY_SIZE(usc_handlers); i++) {
+                fprintf(stdout,
+                        "%*s - %s\n",
+                        30,
+                        usc_handlers[i]->name,
+                        usc_handlers[i]->description);
+        }
+}
+
 bool usc_context_run_triggers(UscContext *context, const char *name, bool force_run)
 {
         autofree(UscStateTracker) *tracker = NULL;
         bool ran_trigger = false;
         bool did_sync = false;
-        bool list = false;
-
-        if (name && strcmp(name, "list") == 0) {
-                list = true;
-                fprintf(stdout, "Currently known triggers:\n\n");
-                goto loops;
-        }
 
         tracker = usc_state_tracker_new();
         if (!tracker) {
@@ -341,16 +347,7 @@ bool usc_context_run_triggers(UscContext *context, const char *name, bool force_
                 fputs("Invalid state has been removed\n", stderr);
         }
 
-loops:
         for (size_t i = 0; i < ARRAY_SIZE(usc_handlers); i++) {
-                if (list) {
-                        fprintf(stdout,
-                                "%*s - %s\n",
-                                30,
-                                usc_handlers[i]->name,
-                                usc_handlers[i]->description);
-                        continue;
-                }
                 if (name && strcmp(usc_handlers[i]->name, name) != 0) {
                         continue;
                 }
@@ -360,9 +357,6 @@ loops:
                 }
                 usc_handle_one(usc_handlers[i], context, tracker, force_run);
                 ran_trigger = true;
-        }
-        if (list) {
-                return true;
         }
 
         if (!ran_trigger) {
