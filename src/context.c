@@ -63,7 +63,7 @@ static const UscHandler *usc_handlers[] = {
         &usc_handler_sysusers,
         &usc_handler_tmpfiles,
         &usc_handler_systemd_reload,
-#ifdef HAVE_SYSTED_REEXEC
+#ifdef HAVE_SYSTEMD_REEXEC
         &usc_handler_systemd_reexec,
 #endif
 #endif

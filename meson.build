@@ -84,7 +84,9 @@ if with_systemd == true
     cdata.set_quoted('SYSTEMD_UTIL_DIR', systemd_util_dir)
 
     with_systemd_reexec = get_option('with-systemd-reexec')
-    cdata.set_quoted('HAVE_SYSTEMD_REEXEC', '1')
+    if with_systemd_reexec == true
+        cdata.set_quoted('HAVE_SYSTEMD_REEXEC', '1')
+    endif
 endif
 
 with_kernel_modules_dir = get_option('with-kernel-modules-dir')
