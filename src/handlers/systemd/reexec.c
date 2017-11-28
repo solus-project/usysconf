@@ -57,7 +57,7 @@ static UscHandlerStatus usc_handler_systemd_reexec_exec(UscContext *ctx, const c
 }
 
 const UscHandler usc_handler_systemd_reexec = {
-        .name = "systemd_reexec",
+        .name = "systemd-reexec",
         .description = "Re-execute systemd",
         .exec = usc_handler_systemd_reexec_exec,
         .paths = unit_paths,

@@ -58,7 +58,7 @@ static UscHandlerStatus usc_handler_systemd_reload_exec(UscContext *ctx, const c
 }
 
 const UscHandler usc_handler_systemd_reload = {
-        .name = "systemd_reload",
+        .name = "systemd-reload",
         .description = "Reload systemd configuration",
         .exec = usc_handler_systemd_reload_exec,
         .paths = unit_paths,

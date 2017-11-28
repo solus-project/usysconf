@@ -51,7 +51,7 @@ static UscHandlerStatus usc_handler_gtk3_immodules_exec(UscContext *ctx, const c
 }
 
 const UscHandler usc_handler_gtk3_immodules = {
-        .name = "gtk3_immodules",
+        .name = "gtk3-immodules",
         .description = "Update GTK3 input module cache",
         .exec = usc_handler_gtk3_immodules_exec,
         .paths = module_paths,

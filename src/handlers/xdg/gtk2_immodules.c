@@ -52,7 +52,7 @@ static UscHandlerStatus usc_handler_gtk2_immodules_exec(__usc_unused__ UscContex
 }
 
 const UscHandler usc_handler_gtk2_immodules = {
-        .name = "gtk2_immodules",
+        .name = "gtk2-immodules",
         .description = "Update GTK2 input module cache",
         .exec = usc_handler_gtk2_immodules_exec,
         .paths = module_paths,
