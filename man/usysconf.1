@@ -1,0 +1,139 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "USYSCONF" "1" "November 2017" "" ""
+.
+.SH "NAME"
+\fBusysconf\fR \- Universal system configuration
+.
+.SH "SYNOPSIS"
+\fBusysconf run [trigggers]\fR
+.
+.SH "DESCRIPTION"
+\fBusysconf\fR is a system configuration agent designed for integration within the software update process\. The main job for \fBusysconf\fR is to run OS configuration tasks within a well defined centralised location\.
+.
+.P
+\fBusysconf\fR will run a variety of triggers to ensure system consistency and health, detecting changes within the filesystem and taking any appropriate actions to configure components such as kernels or the dynamic linker cache\.
+.
+.SH "SUBCOMMANDS"
+\fBrun [triggers]\fR
+.
+.IP "" 4
+.
+.nf
+
+When called without any arguments, all system triggers will be executed\.
+Alternatively, you may provide a list of triggers to run directly\.
+.
+.fi
+.
+.IP "" 0
+.
+.P
+\fBhelp\fR
+.
+.IP "" 4
+.
+.nf
+
+Print the supported command set for the `usysconf(1)` binary\.
+.
+.fi
+.
+.IP "" 0
+.
+.P
+\fBversion\fR
+.
+.IP "" 4
+.
+.nf
+
+Print the version and license information, before quitting\.
+.
+.fi
+.
+.IP "" 0
+.
+.SH "FILES"
+\fBusysconf\fR tracks state through some special files, and will recover in their absence\.
+.
+.P
+\fB/var/log/usysconf\.log\fR
+.
+.IP "" 4
+.
+.nf
+
+This file will contain the output from the last run of usysconf, if the
+tool was run automatically without a working `stdout`\. This is typical
+for situations where `usysconf` is masked behind a long running daemon\.
+.
+.fi
+.
+.IP "" 0
+.
+.P
+\fB/var/log/usysconf\.rewind\.log\fR
+.
+.IP "" 4
+.
+.nf
+
+This is a temporary file used by `usysconf` to store the stdout/stderr
+of the currently executing command\. Under normal situations, this file
+will be replayed into the main log file if there is an error, and this
+rewind log will be deleted\.
+.
+.fi
+.
+.IP "" 0
+.
+.P
+\fB/var/lib/usysconf/status\fR
+.
+.IP "" 4
+.
+.nf
+
+This file is used to track the current state of `usysconf` handlers\.
+Upon completion, `usysconf` will write the state file with the mtime
+for each known asset for the triggers\. This file is read by `usysconf`
+on startup to allow unmodified assets to be skipped, making `usysconf`
+incremental in nature\.
+
+If this file is removed, `usysconf` will run all triggers again and
+write the state file once more \- this is non fatal\. In fact, this
+mechanism can be used to reset `usysconf` state to ensure that all
+triggers do run again\.
+.
+.fi
+.
+.IP "" 0
+.
+.SH "EXIT STATUS"
+On success, 0 is returned\. A non\-zero return code signals a failure\.
+.
+.SH "COPYRIGHT"
+.
+.IP "\(bu" 4
+Copyright © 2017 Ikey Doherty, License: CC\-BY\-SA\-3\.0
+.
+.IP "" 0
+.
+.SH "SEE ALSO"
+\fBclr\-boot\-manager(1)\fR, \fBqol\-assist(1)\fR
+.
+.IP "\(bu" 4
+https://github\.com/solus\-project/usysconf
+.
+.IP "" 0
+.
+.SH "NOTES"
+Creative Commons Attribution\-ShareAlike 3\.0 Unported
+.
+.IP "\(bu" 4
+http://creativecommons\.org/licenses/by\-sa/3\.0/
+.
+.IP "" 0
+
