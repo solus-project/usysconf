@@ -330,6 +330,44 @@ void usc_context_list_triggers(void)
         }
 }
 
+static bool usc_context_ensure_sanity(void)
+{
+        static const char *dirs[] = {
+                "/root",
+                "/home/root",
+                "/",
+        };
+
+        /* Ensure we have a home directory */
+        if (!getenv("HOME")) {
+                for (size_t i = 0; i < ARRAY_SIZE(dirs); i++) {
+                        if (usc_file_exists(dirs[i])) {
+                                setenv("HOME", dirs[i], 1);
+                                break;
+                        }
+                }
+        }
+        if (!getenv("PATH")) {
+                setenv("PATH", "/bin:/usr/bin:/sbin:/usr/sbin", 1);
+        }
+
+        errno = 0;
+
+        /* Make sure track dir exists */
+        if (!usc_file_exists(USYSCONF_TRACK_DIR) && mkdir(USYSCONF_TRACK_DIR, 00755) != 0) {
+                fprintf(stderr, "Cannot create tracking dir %s\n", USYSCONF_TRACK_DIR);
+                return false;
+        }
+
+        /* Move into the track dir for safety */
+        if (chdir(USYSCONF_TRACK_DIR) != 0) {
+                fprintf(stderr, "Failed to chdir() into %s", USYSCONF_TRACK_DIR);
+                return false;
+        }
+
+        return true;
+}
+
 bool usc_context_run_triggers(UscContext *context, const char *name, bool force_run)
 {
         autofree(UscStateTracker) *tracker = NULL;
@@ -345,6 +383,12 @@ bool usc_context_run_triggers(UscContext *context, const char *name, bool force_
         /* Crack on regardless. */
         if (!usc_state_tracker_load(tracker)) {
                 fputs("Invalid state has been removed\n", stderr);
+        }
+
+        /* At this point ensure we have some sanity */
+        if (!usc_context_ensure_sanity()) {
+                fprintf(stderr, "Failed to assert sane environment: %s\n", strerror(errno));
+                return false;
         }
 
         for (size_t i = 0; i < ARRAY_SIZE(usc_handlers); i++) {
