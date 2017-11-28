@@ -22,6 +22,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "config.h"
 #include "util.h"
 
 /**
@@ -40,12 +41,23 @@ static bool dev_null_not_cranky(void)
         return true;
 }
 
-static void redirect_fileno_devnull(int file_no)
+/**
+ * Redirect the file descriptor to the named file
+ */
+static void redirect_fileno_named(int file_no, const char *file, int mode)
 {
         int fd = -1;
-        fd = open("/dev/null", O_WRONLY);
+        fd = open(file, mode, 00644);
         dup2(fd, file_no);
         close(fd);
+}
+
+/**
+ * Redirect the file descriptor to /dev/null
+ */
+static void redirect_fileno_devnull(int file_no)
+{
+        redirect_fileno_named(file_no, "/dev/null", O_WRONLY);
 }
 
 int usc_exec_command(char **command)
@@ -62,10 +74,10 @@ int usc_exec_command(char **command)
                 /* Redirect /dev/null if it isn't cranky */
                 if (dev_null_not_cranky()) {
                         redirect_fileno_devnull(STDOUT_FILENO);
-
-                        /* TODO: Capture stderr in a log file */
-                        redirect_fileno_devnull(STDERR_FILENO);
                 }
+
+                /* Ensure we create the new guy now */
+                redirect_fileno_named(STDERR_FILENO, USYSCONF_LOG_FILE, O_WRONLY | O_CREAT);
 
                 /* Execute the command */
                 if ((r = execv(command[0], command)) != 0) {

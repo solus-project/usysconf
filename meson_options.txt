@@ -11,3 +11,5 @@ option('with-systemd', type: 'boolean', value: 'true', description: 'Enable syst
 option('with-kernel-modules-dir', type: 'string', value: '/lib/modules', description: 'Path to the kernel module base tree')
 # clr-boot-manager specific currently
 option('with-kernel-dir', type: 'string', value: '/usr/lib/kernel', description: 'Path to the vendor kernel tree')
+
+option('with-log-dir', type: 'string', value: '/var/log', description: 'Logging directory for usysconf')

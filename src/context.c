@@ -12,10 +12,13 @@
 #define _GNU_SOURCE
 
 #include <errno.h>
+#include <fcntl.h>
 #include <glob.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/sendfile.h>
+#include <sys/stat.h>
 
 #include "config.h"
 #include "context.h"
@@ -138,6 +141,40 @@ bool usc_context_has_flag(UscContext *self, unsigned int flag)
         return false;
 }
 
+/**
+ * An item failed, so wind back our log and spit it back out to the tty
+ */
+static void usc_spit_fail_log(void)
+{
+        struct stat st = { 0 };
+        int fd = -1;
+        ssize_t written;
+        ssize_t total;
+
+        fd = open(USYSCONF_LOG_FILE, O_RDONLY);
+        if (fd < 0) {
+                fprintf(stderr,
+                        "open(%s): failed to open log file: %s\n",
+                        USYSCONF_LOG_FILE,
+                        strerror(errno));
+                return;
+        }
+        fstat(fd, &st);
+
+        /* Pump entire file to stderr */
+        total = st.st_size;
+        for (;;) {
+                written = sendfile(STDERR_FILENO, fd, NULL, (size_t)total);
+                if (written == total) {
+                        break;
+                } else if (written < 0) {
+                        fprintf(stderr, "sendfile(): %s\n", strerror(errno));
+                        return;
+                }
+                total -= written;
+        }
+}
+
 static void usc_handle_one(const UscHandler *handler, UscContext *context, UscStateTracker *tracker)
 {
         UscHandlerStatus status = USC_HANDLER_MIN;
@@ -174,6 +211,7 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
                         }
                         if ((status & USC_HANDLER_FAIL) == USC_HANDLER_FAIL) {
                                 fputs("Failed\n", stderr);
+                                usc_spit_fail_log();
                                 continue;
                         }
                         if ((status & USC_HANDLER_SKIP) == USC_HANDLER_SKIP) {
@@ -217,6 +255,15 @@ bool usc_context_run_triggers(UscContext *context, const char *name)
         /* Crack on regardless. */
         if (!usc_state_tracker_load(tracker)) {
                 fputs("Invalid state has been removed\n", stderr);
+        }
+
+        /* Before we go, make sure log directory exists */
+        if (!usc_file_exists(USYSCONF_LOG_DIR) && mkdir(USYSCONF_LOG_DIR, 00755) != 0) {
+                fprintf(stderr,
+                        "Cannot construct log directory %s: %s\n",
+                        USYSCONF_LOG_DIR,
+                        strerror(errno));
+                return false;
         }
 
         /* Just test the main loop iteration jank for now */
