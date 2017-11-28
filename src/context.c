@@ -334,8 +334,14 @@ static void usc_context_sync(UscContext *self)
 void usc_context_list_triggers(void)
 {
         fputs("Currently known triggers:\n\n", stdout);
+        static int ld_count = 0;
 
         for (size_t i = 0; i < ARRAY_SIZE(usc_handlers); i++) {
+                if (strcmp(usc_handlers[i]->name, "ldconfig") == 0) {
+                        if (++ld_count > 1) {
+                                continue;
+                        }
+                }
                 fprintf(stdout,
                         "%*s - %s\n",
                         30,
