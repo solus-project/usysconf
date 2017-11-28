@@ -139,6 +139,12 @@ void usc_context_emit_task_start(UscContext *context, const char *fmt, ...)
 void usc_context_emit_task_finish(UscContext *context, UscHandlerStatus status);
 
 /**
+ * General wrapper for handlers to be able to print to the log if they need
+ */
+void usc_context_printf(UscContext *context, const char *fmt, ...)
+    __attribute__((format(printf, 2, 3)));
+
+/**
  * If an item is registered with usc_context_push_skip, this function
  * will return true if the path matches.
  *

@@ -124,9 +124,9 @@ static UscHandlerStatus usc_handler_gconf_exec(UscContext *ctx, const char *path
                         usc_context_emit_task_start(ctx, "Removing old gconf tree");
                         if (rm_dir_kids(GCONF_PRIMARY_TREE) < 0) {
                                 usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
-                                fprintf(stderr,
-                                        "Cannot remove stale gconf tree: %s\n",
-                                        strerror(errno));
+                                usc_context_printf(ctx,
+                                                   "Cannot remove stale gconf tree: %s\n",
+                                                   strerror(errno));
                                 return USC_HANDLER_FAIL;
                         }
                         usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);

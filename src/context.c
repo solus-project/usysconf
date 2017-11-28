@@ -97,6 +97,9 @@ struct UscContext {
 
         UfHashmap *skip_map; /**<Allow implementations to track skips */
 
+        bool have_tty; /**<Whether we have a tty or not.. */
+        FILE *logfh;   /**<File handle for logs to write to */
+
         char *task_string; /**<Current task string */
         int task_print_offset;
 };
@@ -113,6 +116,9 @@ UscContext *usc_context_new()
         if (usc_is_chrooted()) {
                 ret->flags |= USC_FLAGS_CHROOTED;
         }
+        ret->have_tty = isatty(STDOUT_FILENO);
+        /* TODO: Open a log here */
+        ret->logfh = stdout;
 
         /* Skip map only contains a 1 value */
         ret->skip_map =
@@ -346,12 +352,20 @@ bool usc_context_should_skip(UscContext *self, char *skip_item)
         return uf_hashmap_get(self->skip_map, skip_item) != NULL;
 }
 
+void usc_context_printf(UscContext *self, const char *fmt, ...)
+{
+        va_list va;
+        va_start(va, fmt);
+        /* For now just wrap the existing printf function */
+        vfprintf(self->logfh, fmt, va);
+        va_end(va);
+}
+
 void usc_context_emit_task_start(UscContext *self, const char *fmt, ...)
 {
         va_list va;
         va_start(va, fmt);
         int local_offset = 5 + strlen("running");
-        bool use_color = isatty(STDOUT_FILENO);
         static const char *col_reset = "\x1b[0m";
         static const char *embold = "\x1b[1;37m";
 
@@ -366,7 +380,7 @@ void usc_context_emit_task_start(UscContext *self, const char *fmt, ...)
                 abort();
         }
 
-        if (use_color) {
+        if (self->have_tty) {
                 fprintf(stdout,
                         "  ⌛ %s%*s%srunning%s",
                         self->task_string,
@@ -410,7 +424,6 @@ void usc_context_emit_task_finish(UscContext *self, UscHandlerStatus status)
                 [USC_HANDLER_FAIL] = "\x1b[1;31m",
                 [USC_HANDLER_SKIP] = "\x1b[1;37m",
         };
-        bool use_color = isatty(STDOUT_FILENO);
         static const char *col_reset = "\x1b[0m";
         int local_offset = 5;
 
@@ -422,7 +435,7 @@ void usc_context_emit_task_finish(UscContext *self, UscHandlerStatus status)
         local_offset += (int)strlen(labels[status]);
 
         /* Rewind the string and update the current status */
-        if (use_color) {
+        if (self->have_tty) {
                 fprintf(stdout,
                         "\r [%s%s%s] %s%*s%s%s%s\n",
                         colors[status],

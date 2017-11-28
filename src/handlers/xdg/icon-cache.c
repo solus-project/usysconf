@@ -125,7 +125,10 @@ static UscHandlerStatus usc_handler_icon_cache_exec(UscContext *ctx, const char 
                 usc_context_emit_task_start(ctx, "Removing orphaned icon theme: %s", theme_dir);
                 if (rmdir_and(theme_dir, "icon-theme.cache") != 0) {
                         usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
-                        fprintf(stderr, "Failed to remove '%s': %s\n", theme_dir, strerror(errno));
+                        usc_context_printf(ctx,
+                                           "Failed to remove '%s': %s\n",
+                                           theme_dir,
+                                           strerror(errno));
                         return USC_HANDLER_FAIL;
                 }
                 usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
