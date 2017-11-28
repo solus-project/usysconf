@@ -48,7 +48,7 @@ int usc_cli_run_triggers(int argc, char **argv)
         }
 
         /* Run all specified triggers by name */
-        for (int i = optind; i < argc; i++) {
+        for (int i = 0; i < argc; i++) {
                 if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--force") == 0) {
                         continue;
                 }
