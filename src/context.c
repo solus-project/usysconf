@@ -262,10 +262,25 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
         usc_nuke_rewind_log();
 }
 
+/**
+ * Quick wrapper to force usysconf to perform a filesystem sync right
+ * before we go to run anything.
+ *
+ * Even if we no-op because no changes are needed, we will force syncing
+ * to get around eopkg not always syncing properly.
+ */
+static void usc_context_sync(UscContext *self)
+{
+        usc_context_emit_task_start(self, "Syncing filesystems");
+        sync();
+        usc_context_emit_task_finish(self, USC_HANDLER_SUCCESS);
+}
+
 bool usc_context_run_triggers(UscContext *context, const char *name)
 {
         autofree(UscStateTracker) *tracker = NULL;
         bool ran_trigger = false;
+        bool did_sync = false;
 
         tracker = usc_state_tracker_new();
         if (!tracker) {
@@ -291,6 +306,10 @@ bool usc_context_run_triggers(UscContext *context, const char *name)
         for (size_t i = 0; i < ARRAY_SIZE(usc_handlers); i++) {
                 if (name && strcmp(usc_handlers[i]->name, name) != 0) {
                         continue;
+                }
+                if (!did_sync) {
+                        usc_context_sync(context);
+                        did_sync = true;
                 }
                 usc_handle_one(usc_handlers[i], context, tracker);
                 ran_trigger = true;
