@@ -19,13 +19,25 @@
 
 bool usc_is_chrooted()
 {
-        struct stat st = { 0 };
-        /* Don't do dangerous system ops within a chroot like cbm updates */
-        if (stat("/", &st) != 0) {
+        struct stat root_stat = { 0 };
+        struct stat proc_stat = { 0 };
+
+        if (stat("/", &root_stat) != 0) {
                 fprintf(stderr, "Unable to probe '/', assuming chroot\n");
                 return true;
         }
-        return st.st_ino != 2;
+        if (stat("/proc/1/root/.", &proc_stat) != 0) {
+                fprintf(stderr, "Unable to probe '/proc/1/root/.', assuming chroot\n");
+                return true;
+        }
+
+        if (root_stat.st_dev != proc_stat.st_dev) {
+                return true;
+        }
+        if (root_stat.st_ino != proc_stat.st_ino) {
+                return true;
+        }
+        return false;
 }
 
 bool usc_file_mtime(const char *path, time_t *time)
