@@ -240,9 +240,8 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
         /* Make sure the binary is actually present */
         if (handler->required_bin && access(handler->required_bin, X_OK) != 0) {
                 usc_context_emit_task_start(context,
-                                            "skipping: %s (%s not found)",
-                                            handler->name,
-                                            handler->required_bin);
+                                            "skipping: %s (command not found)",
+                                            handler->name);
                 usc_context_emit_task_finish(context, USC_HANDLER_SKIP);
                 return;
         }
