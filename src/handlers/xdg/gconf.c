@@ -99,12 +99,12 @@ static UscHandlerStatus usc_handler_gconf_exec_internal(UscContext *ctx, const c
         if (r != 0) {
                 usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 ret = USC_HANDLER_FAIL | USC_HANDLER_BREAK;
+        } else {
+                usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
+                ret = USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
         }
+
         unsetenv("GCONF_CONFIG_SOURCE");
-        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
-
-        ret = USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
-
 done:
         globfree(&schemas);
         return ret;
