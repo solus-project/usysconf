@@ -45,7 +45,16 @@ static UscHandlerStatus usc_handler_cbm_exec(UscContext *ctx, const char *path)
                 return USC_HANDLER_SKIP;
         }
 
+        /* Only support this in non chroot environments. Users will need to
+         * perform CBM recovery in chroots using CBM directly to ensure that
+         * CBM is never accidentally invoked
+         */
         usc_context_emit_task_start(ctx, "Updating clr-boot-manager");
+        if (usc_context_has_flag(ctx, USC_FLAGS_CHROOTED)) {
+                usc_context_emit_task_finish(ctx, USC_HANDLER_SKIP);
+                return USC_HANDLER_SKIP | USC_HANDLER_BREAK;
+        }
+
         int ret = usc_exec_command(command);
         if (ret != 0) {
                 usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
