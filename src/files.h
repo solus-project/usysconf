@@ -23,6 +23,15 @@
 bool usc_is_chrooted(void);
 
 /**
+ * Sanity test, determine if the /proc filesystem is mounted and available.
+ * To be useful and function correctly, usysconf absolutely requires that
+ * the procfs is mounted.
+ *
+ * @returns True if proc was successfully detected as mounted.
+ */
+bool usc_is_proc_mounted(void);
+
+/**
  * Grab the mtime for a given path
  *
  * @param path Path that exists..

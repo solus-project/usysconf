@@ -11,7 +11,10 @@
 
 #define _GNU_SOURCE
 
+#include <limits.h>
+#include <mntent.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/stat.h>
 
 #include "files.h"
@@ -38,6 +41,30 @@ bool usc_is_chrooted()
                 return true;
         }
         return false;
+}
+
+bool usc_is_proc_mounted()
+{
+        struct mntent *ent = NULL;
+        struct mntent mnt = { 0 };
+        FILE *mnts = NULL;
+        char buf[PATH_MAX];
+        bool ret = false;
+
+        mnts = setmntent("/proc/self/mounts", "r");
+        if (!mnts) {
+                return false;
+        }
+
+        while ((ent = getmntent_r(mnts, &mnt, buf, sizeof(buf)))) {
+                if (mnt.mnt_dir && strcmp("/proc", mnt.mnt_dir) == 0) {
+                        ret = true;
+                        break;
+                }
+        }
+
+        endmntent(mnts);
+        return ret;
 }
 
 bool usc_file_mtime(const char *path, time_t *time)

@@ -393,6 +393,11 @@ bool usc_context_run_triggers(UscContext *context, const char *name, bool force_
         bool ran_trigger = false;
         bool did_sync = false;
 
+        if (!usc_is_proc_mounted()) {
+                fputs("Refusing to run without a mounted /proc filesystem\n", stderr);
+                return false;
+        }
+
         tracker = usc_state_tracker_new();
         if (!tracker) {
                 fputs("Cannot continue without valid UscStateTracker\n", stderr);
