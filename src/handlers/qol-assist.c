@@ -48,7 +48,12 @@ static UscHandlerStatus usc_handler_qol_assist_exec(UscContext *ctx, const char 
                 return USC_HANDLER_SKIP;
         }
 
+        /* QoL migrations only make sense for real live systems */
         usc_context_emit_task_start(ctx, "Registering QoL migration on next boot");
+        if (usc_context_has_flag(ctx, USC_FLAGS_CHROOTED)) {
+                usc_context_emit_task_finish(ctx, USC_HANDLER_SKIP);
+                return USC_HANDLER_SKIP | USC_HANDLER_BREAK;
+        }
 
         int ret = usc_exec_command(command);
         if (ret != 0) {
