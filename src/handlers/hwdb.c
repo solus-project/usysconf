@@ -21,7 +21,7 @@
 #include "files.h"
 #include "util.h"
 
-static const char *font_paths[] = {
+static const char *hwdb_paths[] = {
         "/usr/lib/udev/hwdb.d",
         "/etc/udev/hwdb.d",
 };
@@ -70,8 +70,8 @@ const UscHandler usc_handler_hwdb = {
         .required_bin = "/usr/bin/udevadm",
 #endif
         .exec = usc_handler_hwdb_exec,
-        .paths = font_paths,
-        .n_paths = ARRAY_SIZE(font_paths),
+        .paths = hwdb_paths,
+        .n_paths = ARRAY_SIZE(hwdb_paths),
 };
 
 /*

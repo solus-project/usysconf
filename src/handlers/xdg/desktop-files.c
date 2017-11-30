@@ -20,7 +20,7 @@
 #include "files.h"
 #include "util.h"
 
-static const char *font_paths[] = {
+static const char *app_paths[] = {
         "/usr/share/applications",
 };
 
@@ -61,8 +61,8 @@ const UscHandler usc_handler_desktop_files = {
         .description = "Update desktop database",
         .required_bin = "/usr/bin/update-desktop-database",
         .exec = usc_handler_desktop_files_exec,
-        .paths = font_paths,
-        .n_paths = ARRAY_SIZE(font_paths),
+        .paths = app_paths,
+        .n_paths = ARRAY_SIZE(app_paths),
 };
 
 /*

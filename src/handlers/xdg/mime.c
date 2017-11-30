@@ -20,7 +20,7 @@
 #include "files.h"
 #include "util.h"
 
-static const char *font_paths[] = {
+static const char *mime_paths[] = {
         "/usr/share/mime/*",
 };
 
@@ -67,8 +67,8 @@ const UscHandler usc_handler_mime = {
         .description = "Update mimetype database",
         .required_bin = "/usr/bin/update-mime-database",
         .exec = usc_handler_mime_exec,
-        .paths = font_paths,
-        .n_paths = ARRAY_SIZE(font_paths),
+        .paths = mime_paths,
+        .n_paths = ARRAY_SIZE(mime_paths),
 };
 
 /*
