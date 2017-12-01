@@ -4,7 +4,7 @@ usysconf(1) -- Universal system configuration
 
 ## SYNOPSIS
 
-`usysconf run [trigggers]`
+`usysconf run [triggers]`
 
 
 ## DESCRIPTION
