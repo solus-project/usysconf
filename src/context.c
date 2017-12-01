@@ -239,6 +239,9 @@ static void usc_handle_one(const UscHandler *handler, UscContext *context, UscSt
 
         /* Make sure the binary is actually present */
         if (handler->required_bin && access(handler->required_bin, X_OK) != 0) {
+                if (!getenv("USYSCONFIG_DEBUG")) {
+                        return;
+                }
                 usc_context_emit_task_start(context,
                                             "skipping: %s (command not found)",
                                             handler->name);
