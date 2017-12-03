@@ -38,7 +38,7 @@ static UscHandlerStatus usc_handler_depmod_exec(UscContext *ctx, const char *pat
         autofree(char) *kernel_nom = NULL;
         char *command[] = {
                 "/sbin/depmod",
-                "-A", /* only probe new fellers */
+                "-a", /* probe all fellers */
                 NULL, /* The path we're depmodding */
                 NULL, /* Terminator */
         };
