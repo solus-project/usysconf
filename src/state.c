@@ -163,7 +163,6 @@ bool usc_state_tracker_write(UscStateTracker *self)
         for (UscStateEntry *entry = self->entry; entry; entry = entry->next) {
                 /* Drop stale entries here */
                 if (!entry->ptr || !usc_file_exists(entry->ptr)) {
-                        fprintf(stderr, "Dropping entry: %s\n", entry->ptr);
                         continue;
                 }
                 if (fprintf(fp, "%ld:%s\n", entry->mtime, entry->ptr) < 0) {
