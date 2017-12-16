@@ -245,7 +245,6 @@ bool usc_state_tracker_load(UscStateTracker *self)
 
                 /* Drop old cache entries */
                 if (!usc_file_exists(snd)) {
-                        fprintf(stderr, "Dropping old cache item '%s'\n", snd);
                         errno = 0;
                         goto next;
                 }
