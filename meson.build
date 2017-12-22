@@ -88,6 +88,11 @@ if with_systemd == true
     if with_systemd_reexec == true
         cdata.set_quoted('HAVE_SYSTEMD_REEXEC', '1')
     endif
+
+    with_vbox_restart = get_option('with-vbox-restart')
+    if with_vbox_restart == true
+        cdata.set_quoted('HAVE_VBOX_RESTART', '1')
+    endif
 endif
 
 with_kernel_modules_dir = get_option('with-kernel-modules-dir')
@@ -170,6 +175,7 @@ report += [
     '    systemd sysusers directory:             @0@'.format(systemd_sysusers_dir),
     '    systemd binary directory:               @0@'.format(systemd_util_dir),
     '    allow systemd reexec:                   @0@'.format(with_systemd_reexec),
+    '    support vboxdrv.service:                @0@'.format(with_vbox_restart),
 ]
 endif
 

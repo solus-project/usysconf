@@ -44,6 +44,9 @@ if with_systemd == true
     if with_systemd_reexec == true
         handlers += 'systemd/reexec'
     endif
+    if with_vbox_restart == true
+        handlers += 'systemd/vbox-restart'
+    endif
 endif
 
 libusysconf_sources = [

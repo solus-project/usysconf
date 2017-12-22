@@ -14,3 +14,6 @@ option('with-kernel-modules-dir', type: 'string', value: '/lib/modules', descrip
 option('with-kernel-dir', type: 'string', value: '/usr/lib/kernel', description: 'Path to the vendor kernel tree')
 
 option('with-log-dir', type: 'string', value: '/var/log', description: 'Logging directory for usysconf')
+
+# This is useful for virtualbox upgrades
+option('with-vbox-restart', type: 'boolean', value: 'false', description: 'Automatically restart vboxdrv service on update')

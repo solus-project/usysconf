@@ -66,6 +66,9 @@ static const UscHandler *usc_handlers[] = {
 #ifdef HAVE_SYSTEMD_REEXEC
         &usc_handler_systemd_reexec,
 #endif
+#ifdef HAVE_VBOX_RESTART
+        &usc_handler_vbox_restart,
+#endif
 #endif
 
         /** Enter userspace. */

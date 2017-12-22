@@ -40,6 +40,9 @@ extern UscHandler usc_handler_systemd_reload;
 #ifdef HAVE_SYSTEMD_REEXEC
 extern UscHandler usc_handler_systemd_reexec;
 #endif
+#ifdef HAVE_VBOX_RESTART
+extern UscHandler usc_handler_vbox_restart;
+#endif
 #endif
 
 extern UscHandler usc_handler_glib2;
