@@ -22,7 +22,13 @@
 
 static const char *library_paths[] = {
         /* Match all library paths directories and run ldconfig for them */
-        "/usr/lib64", "/usr/lib32", "/usr/lib", "/lib32", "/lib64", "/lib",
+        "/usr/lib64",
+        "/usr/lib32",
+        "/usr/lib",
+        "/lib32",
+        "/lib64",
+        "/lib",
+        "/usr/share/ld.so.conf.d",
 };
 
 /**
