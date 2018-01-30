@@ -124,6 +124,10 @@ UscContext *usc_context_new()
         ret->have_tty = isatty(STDOUT_FILENO) ? true : false;
         ret->failed = false;
 
+        if (access("/run/initramfs/livedev", F_OK) == 0) {
+                ret->flags |= USC_FLAGS_LIVE_MEDIUM;
+        }
+
         /* Useful for build environments to forcibly bypass isatty detection */
         if (getenv("USYSCONF_LOG_STDOUT")) {
                 ret->have_tty = true;

@@ -41,7 +41,8 @@ static UscHandlerStatus usc_handler_systemd_reexec_exec(UscContext *ctx, const c
 
         usc_context_emit_task_start(ctx, "Re-executing systemd");
 
-        if (usc_context_has_flag(ctx, USC_FLAGS_CHROOTED)) {
+        if (usc_context_has_flag(ctx, USC_FLAGS_CHROOTED) ||
+            usc_context_has_flag(ctx, USC_FLAGS_LIVE_MEDIUM)) {
                 usc_context_emit_task_finish(ctx, USC_HANDLER_SKIP);
                 return USC_HANDLER_SKIP | USC_HANDLER_BREAK;
         }

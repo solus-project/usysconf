@@ -22,6 +22,7 @@ typedef enum {
         USC_FLAGS_MIN = 1 << 0,
         USC_FLAGS_CHROOTED = 1 << 1,
         USC_FLAGS_FORCE_CHROOT = 1 << 2,
+        USC_FLAGS_LIVE_MEDIUM = 1 << 3,
         USC_FLAGS_MAX,
 } UscFlags;
 
