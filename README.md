@@ -63,6 +63,6 @@ Checkmark means work is unblocked for this item.
 
 ## Authors
 
-Copyright © 2017 Solus Project
+Copyright © 2017-2018 Solus Project
 
 `usysconf` is available under the terms of the `GPL-2.0` license.
