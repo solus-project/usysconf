@@ -55,8 +55,6 @@ static const UscHandler *usc_handlers[] = {
 
 #ifdef HAVE_LDM
         &usc_handler_ldm, /**<Update drivers/GL-links/etc */
-        /* Very likely that LDM caused a cache invalidation for lib dirs */
-        &usc_handler_ldconfig,
 #endif
 
 #ifdef HAVE_SYSTEMD
@@ -347,14 +345,8 @@ static void usc_context_sync(UscContext *self)
 void usc_context_list_triggers(void)
 {
         fputs("Currently known triggers:\n\n", stdout);
-        static int ld_count = 0;
 
         for (size_t i = 0; i < ARRAY_SIZE(usc_handlers); i++) {
-                if (strcmp(usc_handlers[i]->name, "ldconfig") == 0) {
-                        if (++ld_count > 1) {
-                                continue;
-                        }
-                }
                 fprintf(stdout,
                         "%*s - %s\n",
                         30,
