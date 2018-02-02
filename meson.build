@@ -67,6 +67,10 @@ with_qol = get_option('with-qol-assist')
 if with_qol == true
     cdata.set('HAVE_QOL_ASSIST', '1')
 endif
+with_apparmor = get_option('with-apparmor')
+if with_apparmor == true
+    cdata.set('HAVE_APPARMOR', '1')
+endif
 
 # Work out systemd support
 with_systemd = get_option('with-systemd')
@@ -156,6 +160,7 @@ report = [
     '    linux-driver-management:                @0@'.format(with_ldm),
     '    qol-assist:                             @0@'.format(with_qol),
     '    systemd support:                        @0@'.format(with_systemd),
+    '    apparmor (aa-lsm-hook)                  @0@'.format(with_apparmor),
     '',
     '    Kernel configuration:',
     '    =====================',

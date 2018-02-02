@@ -34,6 +34,10 @@ if with_ldm == true
     handlers += 'linux-driver-management'
 endif
 
+if with_apparmor == true
+    kernel_handlers += 'apparmor'
+endif
+
 # We'll still enable hwdb but alter for udev path if not using systemd
 if with_systemd == true
     handlers += [

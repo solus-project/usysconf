@@ -45,6 +45,10 @@ extern UscHandler usc_handler_vbox_restart;
 #endif
 #endif
 
+#ifdef HAVE_APPARMOR
+extern UscHandler usc_handler_apparmor;
+#endif
+
 extern UscHandler usc_handler_glib2;
 extern UscHandler usc_handler_fonts;
 extern UscHandler usc_handler_mime;

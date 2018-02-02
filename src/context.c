@@ -71,6 +71,10 @@ static const UscHandler *usc_handlers[] = {
 #endif
 #endif
 
+#ifdef HAVE_APPARMOR
+        &usc_handler_apparmor,
+#endif
+
         /** Enter userspace. */
         &usc_handler_glib2,
         &usc_handler_fonts,
