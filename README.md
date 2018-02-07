@@ -4,61 +4,48 @@
 
 Universal system configuration interface for operating systems (i.e. Solus)
 
-This is a staging tree to work on a new component for Solus, a configuration interface
-that centralises all of the stateful configuration tasks currently handled in many disconnected
-package install scripts.
+`usysconf` provides a centralised configuration system to replace "package hokos" and post-installation triggers with a reentrant binary, suitable for use in recovery situations. It requires a certain development approach, by throwing away traditional postinstalls, and centralising/minimising the amount of system delta generated during these steps.
 
-This project will provide a unified approach to configuring the system, and is designed
-to be the very last operation that package manager would call in a stack. This also allows
-Solus to drop the [COMAR system](https://solus-project.com/2017/11/12/this-week-in-solus-install-48/).
+The binary replaces the legacy [COMAR system](https://solus-project.com/2017/11/12/this-week-in-solus-install-48/) in Solus with a single point for all configuration to take place. A simple state file tracks the `mtime` for interesting file paths, and when those are invalidated triggers are run in response. This allows `usysconf` to be the final execution step in any package/update operation, and incremently apply trigger steps to the system.
 
-In time this will also expand to incorporate management of stateless configuration
-policies. For now we are focused on providing the automated system configuration
-components to provide a fail-safe binary that is immune to update issues and can
-safely apply system changes (such as cache and system user management).
+Lastly, a CLI interface is provided allowing users to forcibly run well known triggers by name (or all) to assist in recovery. This allows users to not worry about the inaccessible triggers of the past, and instead request usysconf run all triggers that need running. Optionally, all triggers can be run, bypassing update time checks:
 
-We will also provide a CLI interface to allow usysconf to be utilised as a recovery
-tool, enabling users to apply triggers and bring their system back up to full health.
+```bash
+$ sudo usysconf run -f
+```
 
 `usysconf` is a [Solus project](https://solus-project.com/)
 
 ![logo](https://build.solus-project.com/logo.png)
 
-### TODO
+## Supported triggers
 
- - [x] Get initial static binary together
- - [x] Add library functions to help with logging/state/exec/etc
- - [x] Add very basic `mtime` tests for conditionally updating directories
- - [x] Enforce linking against `musl` for tiny binaries. (glibc is huge..)
- - [x] Drop `prefix` notion and restrict to direct host usage (or chroot)
- - [ ] Make sure the following list is fully accounted for by usysconf
- - [ ] Don't run a hook if prerequisites aren't found
-
-#### Affected packages in Solus
-
-Checkmark means work is unblocked for this item.
-
- - [x] nvidia-glx-driver
- - [x] nvidia-304-glx-driver
- - [x] nvidia-340-glx-driver
- - [x] mesalib
- - [x] xorg-server 
- - [x] openssh (must also be converted to sysusers/tmpfiles)
- - [x] fontconfig
- - [x] ca-certs (will expand to use `trust` in future)
- - [x] gtk2
- - [x] gtk3
- - [x] glib2
- - [x] desktop-file-utils
- - [x] hicolor-icon-theme
- - [x] comar (irony, yes. it just runs an unneeded script)
- - [x] cups (just switch to sysusers/tmpfiles)
- - [x] kernel-glue
- - [ ] baselayout
- - [x] dcron (consider killing with fire, convert to sysusers/tmpfile)
- - [x] gconf
- - [x] mlocate (remove trigger completely, sysusers the mlocale group)
- - [ ] pisi (currently unkillable until we build muxer)
+| Trigger        | Description                             | Notes                                         |
+|----------------|-----------------------------------------|-----------------------------------------------|
+| ldconfig       | Update dynamic library cache            |                                               |
+| boot           | Update boot configuration + kernels     | Uses `clr-boot-manager`                       |
+| qol-assist     | Register QoL migration                  | Uses `qol-assist`                             |
+| depmod         | Run depmod for each kernel              |                                               |
+| hwdb           | Update hardware database                |                                               |
+| drivers        | Update graphical driver configuration   | Uses `linux-driver-management`                |
+| sysusers       | Update systemd sysusers                 |                                               |
+| tmpfiles       | Update systemd tmpfiles                 |                                               |
+| systemd-reload | Reload systemd configuration            |                                               |
+| systemd-reexec | Re-execute systemd                      |                                               |
+| vbox-restart   | Restart VirtualBox services             | Will be replaced with generic service handler |
+| apparmor       | Compile AppArmor profiles               | Uses `aa-lsm-hook`                            |
+| glib2          | Compile glib-schemas                    |                                               |
+| fonts          | Rebuild font cache                      |                                               |
+| mime           | Update mimetype database                |                                               |
+| icon-caches    | Update icon theme caches                |                                               |
+| desktop-files  | Update desktop database                 |                                               |
+| gconf          | Update GConf schemas                    |                                               |
+| dconf          | Update dconf database                   |                                               |
+| gtk2-immodules | Update GTK2 input module cache          |                                               |
+| gtk3-immodules | Update GTK3 input module cache          |                                               |
+| mandb          | Updating manpages database              |                                               |
+| ssl-certs      | Update SSL certificate configuration    | Only uses `c_rehash` right now                |
+| openssh        | Create OpenSSH host key                 |                                               |
 
 
 ## Authors
