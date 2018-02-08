@@ -19,3 +19,5 @@ option('with-log-dir', type: 'string', value: '/var/log', description: 'Logging 
 option('with-vbox-restart', type: 'boolean', value: 'false', description: 'Automatically restart vboxdrv service on update')
 
 option('with-apparmor', type: 'boolean', value: 'true', description: 'Enable AppArmor integration via aa-lsm-hook')
+
+option('with-mono-certs', type: 'boolean', value: 'true', description: 'Enable Mono certificate population via cert-sync')

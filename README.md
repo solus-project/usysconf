@@ -34,6 +34,7 @@ $ sudo usysconf run -f
 | systemd-reexec | Re-execute systemd                      |                                               |
 | vbox-restart   | Restart VirtualBox services             | Will be replaced with generic service handler |
 | apparmor       | Compile AppArmor profiles               | Uses `aa-lsm-hook`                            |
+| mono-certs     | Populate Mono certificates              | Uses `cert-sync`                              |
 | glib2          | Compile glib-schemas                    |                                               |
 | fonts          | Rebuild font cache                      |                                               |
 | mime           | Update mimetype database                |                                               |
