@@ -34,7 +34,6 @@ $ sudo usysconf run -f
 | systemd-reexec | Re-execute systemd                      |                                               |
 | vbox-restart   | Restart VirtualBox services             | Will be replaced with generic service handler |
 | apparmor       | Compile AppArmor profiles               | Uses `aa-lsm-hook`                            |
-| mono-certs     | Populate Mono certificates              | Uses `cert-sync`                              |
 | glib2          | Compile glib-schemas                    |                                               |
 | fonts          | Rebuild font cache                      |                                               |
 | mime           | Update mimetype database                |                                               |
@@ -46,7 +45,12 @@ $ sudo usysconf run -f
 | gtk3-immodules | Update GTK3 input module cache          |                                               |
 | mandb          | Updating manpages database              |                                               |
 | ssl-certs      | Update SSL certificate configuration    | Only uses `c_rehash` right now                |
+| mono-certs     | Populate Mono certificates              | Uses `cert-sync`                              |
 | openssh        | Create OpenSSH host key                 |                                               |
+
+### Special note
+
+The two cert handlers will eventually merge to use a full system trust store that serves normal applications and Mono.
 
 
 ## Authors

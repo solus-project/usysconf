@@ -73,10 +73,6 @@ static const UscHandler *usc_handlers[] = {
         &usc_handler_apparmor,
 #endif
 
-#ifdef HAVE_MONO_CERTS
-        &usc_handler_mono_certs,
-#endif
-
         /** Enter userspace. */
         &usc_handler_glib2,
         &usc_handler_fonts,
@@ -93,6 +89,11 @@ static const UscHandler *usc_handlers[] = {
         /* Special cases */
         &usc_handler_mandb,
         &usc_handler_ssl_certs,
+
+#ifdef HAVE_MONO_CERTS
+        &usc_handler_mono_certs,
+#endif
+
         &usc_handler_sshd,
 };
 
