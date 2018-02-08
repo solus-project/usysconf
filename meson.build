@@ -71,6 +71,10 @@ with_apparmor = get_option('with-apparmor')
 if with_apparmor == true
     cdata.set('HAVE_APPARMOR', '1')
 endif
+with_mono_certs = get_option('with-mono-certs')
+if with_mono_certs == true
+    cdata.set('HAVE_MONO_CERTS', '1')
+endif
 
 # Work out systemd support
 with_systemd = get_option('with-systemd')
@@ -161,6 +165,7 @@ report = [
     '    qol-assist:                             @0@'.format(with_qol),
     '    systemd support:                        @0@'.format(with_systemd),
     '    apparmor (aa-lsm-hook)                  @0@'.format(with_apparmor),
+    '    mono-certs (cert-sync)                  @0@'.format(with_mono_certs),
     '',
     '    Kernel configuration:',
     '    =====================',

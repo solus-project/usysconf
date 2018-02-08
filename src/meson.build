@@ -38,6 +38,10 @@ if with_apparmor == true
     kernel_handlers += 'apparmor'
 endif
 
+if with_mono_certs == true
+    handlers += 'mono-certs'
+endif
+
 # We'll still enable hwdb but alter for udev path if not using systemd
 if with_systemd == true
     handlers += [

@@ -49,6 +49,10 @@ extern UscHandler usc_handler_vbox_restart;
 extern UscHandler usc_handler_apparmor;
 #endif
 
+#ifdef HAVE_MONO_CERTS
+extern UscHandler usc_handler_mono_certs;
+#endif
+
 extern UscHandler usc_handler_glib2;
 extern UscHandler usc_handler_fonts;
 extern UscHandler usc_handler_mime;
