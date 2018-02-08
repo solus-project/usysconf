@@ -29,7 +29,8 @@ static const char *mono_certs_paths[] = {
  * Populate the Mono certificates systemwide so Mono applications are ready to
  * be used out of the box.
  */
-static UscHandlerStatus usc_handler_mono_certs_exec(UscContext *ctx, __usc_unused__ const char *path)
+static UscHandlerStatus usc_handler_mono_certs_exec(UscContext *ctx,
+                                                    __usc_unused__ const char *path)
 {
         char *command[] = {
                 "/usr/bin/cert-sync",
