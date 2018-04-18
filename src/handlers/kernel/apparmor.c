@@ -59,6 +59,7 @@ static UscHandlerStatus usc_handler_apparmor_exec(UscContext *ctx, __usc_unused_
                 usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL;
         }
+        usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
 
         /* Only run once */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
