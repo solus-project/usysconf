@@ -31,8 +31,11 @@ static const char *apparmor_paths[] = {
  */
 static UscHandlerStatus usc_handler_apparmor_exec(UscContext *ctx, __usc_unused__ const char *path)
 {
-        char *command[] = {
+        char *compile_command[] = {
                 "/usr/sbin/aa-lsm-hook-compile", NULL, /* Terminator */
+        };
+        char *load_command[] = {
+                "/usr/sbin/aa-lsm-hook-load", NULL, /* Terminator */
         };
 
         usc_context_emit_task_start(ctx, "Compiling AppArmor profiles");
@@ -41,12 +44,21 @@ static UscHandlerStatus usc_handler_apparmor_exec(UscContext *ctx, __usc_unused_
                 return USC_HANDLER_SKIP | USC_HANDLER_BREAK;
         }
 
-        int ret = usc_exec_command(command);
+        /* Compile */
+        int ret = usc_exec_command(compile_command);
         if (ret != 0) {
                 usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
                 return USC_HANDLER_FAIL;
         }
         usc_context_emit_task_finish(ctx, USC_HANDLER_SUCCESS);
+
+        /* Load */
+        usc_context_emit_task_start(ctx, "Reloading AppArmor profiles");
+        ret = usc_exec_command(load_command);
+        if (ret != 0) {
+                usc_context_emit_task_finish(ctx, USC_HANDLER_FAIL);
+                return USC_HANDLER_FAIL;
+        }
 
         /* Only run once */
         return USC_HANDLER_SUCCESS | USC_HANDLER_BREAK;
