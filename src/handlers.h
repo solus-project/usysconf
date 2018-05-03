@@ -69,6 +69,8 @@ extern UscHandler usc_handler_mono_certs;
 
 extern UscHandler usc_handler_sshd;
 
+extern UscHandler usc_handler_udev_rules;
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

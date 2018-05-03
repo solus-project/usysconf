@@ -16,6 +16,7 @@ handlers = [
     'mandb',
     'ssl',
     'openssh',
+    'udev-rules',
 ]
 
 kernel_handlers = [
