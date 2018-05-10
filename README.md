@@ -4,7 +4,7 @@
 
 Universal system configuration interface for operating systems (i.e. Solus)
 
-`usysconf` provides a centralised configuration system to replace "package hokos" and post-installation triggers with a reentrant binary, suitable for use in recovery situations. It requires a certain development approach, by throwing away traditional postinstalls, and centralising/minimising the amount of system delta generated during these steps.
+`usysconf` provides a centralised configuration system to replace "package hooks" and post-installation triggers with a reentrant binary, suitable for use in recovery situations. It requires a certain development approach, by throwing away traditional postinstalls, and centralising/minimising the amount of system delta generated during these steps.
 
 The binary replaces the legacy [COMAR system](https://solus-project.com/2017/11/12/this-week-in-solus-install-48/) in Solus with a single point for all configuration to take place. A simple state file tracks the `mtime` for interesting file paths, and when those are invalidated triggers are run in response. This allows `usysconf` to be the final execution step in any package/update operation, and incremently apply trigger steps to the system.
 
