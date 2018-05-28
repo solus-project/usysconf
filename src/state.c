@@ -306,8 +306,8 @@ bool usc_state_tracker_needs_update(UscStateTracker *self, const char *path, boo
                 return true;
         }
 
-        /* If our record mtime is older than the current mtime, update it */
-        if (entry->mtime < mtime) {
+        /* If our record mtime is not the same as the current mtime, update it */
+        if (entry->mtime != mtime) {
                 return true;
         }
 
